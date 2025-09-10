@@ -22,6 +22,7 @@ Este documento organiza o trabalho em módulos incrementais, do mais simples ao 
   - `make bootstrap` cria o projeto; `make migrate` funciona sem erros; acessível em `http://localhost:8000`.
 - Comandos úteis:
   - `make bootstrap`, `make migrate`, `make createsuperuser`.
+ - Status: Concluído.
 
 ## M2 — Modelagem e CRUDs básicos (Companies, Documents, Signers)
 - Objetivo: Modelos, serializers, viewsets e rotas CRUD no DRF.
