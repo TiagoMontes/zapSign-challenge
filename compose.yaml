@@ -23,7 +23,7 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-    command: sh -lc "python manage.py runserver 0.0.0.0:8000"
+    command: sh -lc "test -f manage.py && python manage.py runserver 0.0.0.0:8000 || python -m http.server 8000"
     ports:
       - "8000:8000"
     depends_on:
@@ -33,4 +33,3 @@ services:
 
 volumes:
   db_data:
-

@@ -11,6 +11,7 @@ Este documento organiza o trabalho em módulos incrementais, do mais simples ao 
   - É possível abrir shell no container com `make web/sh`.
 - Comandos úteis:
   - `make env`, `make build`, `make up`, `make down`, `make logs`, `make web/sh`, `make db/psql`.
+ - Status: Concluído.
 
 ## M1 — Bootstrap do Projeto Django + DRF + Postgres
 - Objetivo: Criar o esqueleto Django e configurar DRF e banco.
