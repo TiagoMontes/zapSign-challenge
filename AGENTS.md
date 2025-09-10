@@ -25,9 +25,14 @@
 - URLs: prefer `kebab-case` paths; DRF routes under `/api/v1/`.
 
 ## Testing Guidelines
+- **TDD Workflow**: All API implementations must follow Test-Driven Development:
+  1. **Red**: Write failing tests first
+  2. **Green**: Implement minimal code to make tests pass
+  3. **Refactor**: Improve code while keeping tests green
 - Use Django's test runner (`manage.py test`).
 - Place tests under each app: `app/tests/test_*.py` using `TestCase`/`APITestCase`.
 - Aim to cover models, serializers, viewsets, and critical flows (ZapSign, analysis).
+- Write tests before any new feature implementation.
 
 ## Commit & Pull Request Guidelines
 - **Commit Format**: Use aspas simples com quebra literal para commits multi-linha:
