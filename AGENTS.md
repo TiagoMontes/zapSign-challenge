@@ -25,15 +25,34 @@
 - URLs: prefer `kebab-case` paths; DRF routes under `/api/v1/`.
 
 ## Testing Guidelines
-- Use Django’s test runner (`manage.py test`).
+- Use Django's test runner (`manage.py test`).
 - Place tests under each app: `app/tests/test_*.py` using `TestCase`/`APITestCase`.
 - Aim to cover models, serializers, viewsets, and critical flows (ZapSign, analysis).
 
 ## Commit & Pull Request Guidelines
-- Semantic commits (examples):
-  - `feat(api): add document viewset`
-  - `fix(core): handle null signer email`
-  - `docs: update setup instructions`
+- **Commit Format**: Use aspas simples com quebra literal para commits multi-linha:
+  ```bash
+  git commit -m 'type(scope): brief description
+
+  - detailed change 1
+  - detailed change 2
+  - detailed change 3'
+  ```
+- **Semantic commit types**:
+  - `feat(scope): add new feature`
+  - `fix(scope): fix bug or issue`
+  - `chore(scope): maintenance, deps, config`
+  - `docs(scope): documentation updates`
+  - `test(scope): add or update tests`
+  - `refactor(scope): code restructure without behavior change`
+- **Scope examples**: `api`, `core`, `dev`, `deploy`, `auth`, `models`
+- **Format example**:
+  ```bash
+  git commit -m 'chore(dev): allow web to start before Django bootstrap
+
+  - compose: fallback to python -m http.server when manage.py is absent
+  - plan: mark M0 as completed and proceed to M1'
+  ```
 - PRs: clear description, steps to test, linked issues, and screenshots for UI.
 
 ## Security & Configuration Tips
