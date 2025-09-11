@@ -47,7 +47,7 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   - **Repositories**: Interfaces `ICompanyRepository`, `IDocumentRepository`, `ISignerRepository`
   - **DTOs**: `CreateCompanyDTO`, `DocumentResponseDTO`, `SignerDTO`
   - **Frameworks**: Django models, DRF serializers, viewsets
-  - Rotas RESTful (`/api/v1/companies/`, `/api/v1/documents/`, `/api/v1/signers/`).
+  - Rotas RESTful (`/api/companies/`, `/api/documents/`, `/api/signers/`).
 - **Critérios de aceite**:
   - **TDD Red-Green-Refactor**: Todos os use cases implementados com TDD
   - **Dependency Inversion**: Use cases dependem apenas de interfaces
@@ -113,7 +113,7 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   - **Use Case**: `AnalyzeDocumentUseCase` orquestra análise e persistência
   - **Interface**: `IAnalysisService.analyze(text) -> AnalysisResult`
   - **Implementations**: MVP heurístico + preparação para LLM
-  - Endpoint para solicitar nova análise (`POST /api/v1/documents/{id}/analyze`)
+  - Endpoint para solicitar nova análise (`POST /api/documents/{id}/analyze`)
 - **Critérios de aceite**:
   - **TDD**: Business logic testada independentemente de IA provider
   - **Strategy Pattern**: Múltiplas implementações de IAnalysisService
@@ -145,7 +145,7 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   - **TDD**: Testes de integração para todos os endpoints
   - **Authentication**: JWT com `djangorestframework-simplejwt`
   - **Use Cases**: Específicos para API pública (diferentes do admin)
-  - **Versioning**: `/api/v1/...` estrutura
+  - **Versioning**: `/api/...` estrutura
   - **OpenAPI**: Schema automático com `drf-spectacular`
   - **Endpoints**: criar `Document`, disparar análise, relatórios por período/company
 - **Critérios de aceite**:

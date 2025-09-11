@@ -69,7 +69,7 @@
   - Functions/variables: `snake_case`
   - Constants: `UPPER_SNAKE_CASE`
   - Modules: `snake_case` (e.g., `core`, `auth_service`)
-- **URLs**: prefer `kebab-case` paths; DRF routes under `/api/v1/`
+- **URLs**: prefer `kebab-case` paths; DRF routes under `/api/`
 
 ## Clean Architecture Layers
 
