@@ -19,29 +19,33 @@ from .django.models import Company, Document, Signer
 
 
 def _company_to_dto(obj: Company) -> CompanyDTO:
-    return CompanyDTO(id=obj.id, name=obj.name, api_token=obj.api_token)
+    return CompanyDTO(
+        id=getattr(obj, "id"),
+        name=str(obj.name),
+        api_token=str(obj.api_token),
+    )
 
 
 def _signer_to_dto(obj: Signer) -> SignerDTO:
     return SignerDTO(
-        id=obj.id,
-        name=obj.name,
-        email=obj.email,
-        token=obj.token,
-        status=obj.status,
-        external_id=obj.external_id,
+        id=getattr(obj, "id"),
+        name=str(obj.name),
+        email=str(obj.email),
+        token=str(obj.token),
+        status=str(obj.status),
+        external_id=str(obj.external_id),
     )
 
 
 def _document_to_dto(obj: Document) -> DocumentResponseDTO:
     return DocumentResponseDTO(
-        id=obj.id,
-        company_id=obj.company_id,
-        name=obj.name,
-        status=obj.status,
-        token=obj.token,
-        open_id=obj.open_id,
-        external_id=obj.external_id,
+        id=getattr(obj, "id"),
+        company_id=getattr(obj, "company_id"),
+        name=str(obj.name),
+        status=str(obj.status),
+        token=str(obj.token),
+        open_id=getattr(obj, "open_id"),
+        external_id=str(obj.external_id),
     )
 
 
@@ -96,4 +100,3 @@ class DocumentRepository(IDocumentRepository):
 
     def list(self) -> Iterable[DocumentResponseDTO]:
         return [_document_to_dto(o) for o in Document.objects.order_by("-id").all()]
-

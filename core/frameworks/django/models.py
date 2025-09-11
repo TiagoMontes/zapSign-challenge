@@ -12,9 +12,10 @@ class TimeStampedModel(models.Model):
 class Company(TimeStampedModel):
     name = models.CharField(max_length=255)
     api_token = models.CharField(max_length=255, blank=True, default="")
+    objects = models.Manager()
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
 
 class Signer(models.Model):
@@ -23,6 +24,7 @@ class Signer(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     external_id = models.CharField(max_length=255, blank=True, default="")
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.name} <{self.email}>"
@@ -39,7 +41,7 @@ class Document(TimeStampedModel):
 
     # Associação: 1 documento -> * signatários (M2)
     signers = models.ManyToManyField(Signer, blank=True, related_name="documents")
+    objects = models.Manager()
 
     def __str__(self) -> str:
-        return f"{self.name} (Company: {self.company_id})"
-
+        return str(self.name)
