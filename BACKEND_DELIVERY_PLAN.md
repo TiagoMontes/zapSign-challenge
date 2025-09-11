@@ -3,8 +3,13 @@
 Este documento organiza o trabalho em módulos incrementais seguindo Clean Architecture e princípios SOLID, do mais simples ao mais complexo. Cada módulo define objetivo, entregáveis, critérios de aceite e comandos úteis.
 
 ## Architecture Overview
-- **Clean Architecture**: 4 camadas (Entities, Use Cases, Interfaces, Frameworks)
-- **SOLID Principles**: Dependency inversion, single responsibility, interface segregation
+- **Clean (simplificada)**: 4 camadas
+  - Domain (Entities)
+  - Use Cases (Application)
+  - Infra (Repositories com Django ORM + mappers em `core/orm`)
+  - API (Serializers/ViewSets/Routers em `api/`)
+- **Fluxo de dependência**: Entities não dependem de nada; Use Cases dependem de Entities e recebem repositórios concretos por injeção; Repositories usam Django ORM; API pode instanciar Use Cases diretamente ou via providers opcionais (`core/app/providers`).
+- **SOLID Principles**: Single responsibility, coesão por módulo, segregação por responsabilidade
 - **TDD**: Test-driven development obrigatório em todas as implementações
 
 ## M0 — Ambiente de Desenvolvimento (Docker + Postgres)
@@ -31,58 +36,75 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   - `make bootstrap`, `make migrate`, `make createsuperuser`.
 - **Status**: Concluído.
 
-## M2 — Modelagem e CRUDs básicos (Companies, Documents, Signers) - Clean Architecture
-- **Objetivo**: Implementar entidades, use cases e interfaces seguindo Clean Architecture.
+## M2 — Modelagem e CRUDs básicos (Companies, Documents, Signers) — Clean (simplificada)
+- **Objetivo**: Implementar entidades, use cases e repositórios concretos usando Django ORM (sem ports/adapters).
 - **Entregáveis**:
   ```
   core/
-  ├── entities/         # Company, Document, Signer entities
-  ├── use_cases/        # CreateCompanyUseCase, CreateDocumentUseCase, etc.
-  ├── interfaces/       # ICompanyRepository, IDocumentRepository, DTOs
-  └── frameworks/       # Django models, serializers, viewsets
+  ├── domain/
+  │   └── entities/                 # Company, Document, Signer (puras)
+  ├── use_cases/                    # CreateCompanyUseCase, CreateDocumentUseCase, AssignSignersUseCase
+  ├── orm/
+  │   ├── models.py                 # Django ORM models
+  │   └── mappers.py                # Model ↔ Entity (isola ORM do domínio)
+  ├── repositories/
+  │   ├── company_repo.py           # CompanyRepository
+  │   ├── document_repo.py          # DocumentRepository (assign_signers)
+  │   └── signer_repo.py            # SignerRepository
+  └── app/
+      └── providers/                # Factories opcionais para injetar repositórios em use cases
+          ├── company.py
+          └── document.py
+
+  api/
+  ├── serializers/                  # CompanySerializer, DocumentSerializer, SignerSerializer
+  ├── views/                        # CompanyViewSet, DocumentViewSet, SignerViewSet
+  └── routers.py                    # DRF router em /api
+  
+  tests/
+  ├── fakes/                        # Repositórios in-memory para TDD dos use cases
+  ├── test_entities/
+  ├── test_use_cases/
+  └── test_frameworks/              # Testes de API (integração)
   ```
-  - **TDD**: Testes para entities (regras de negócio) antes da implementação
-  - **Entities**: `Company`, `Document`, `Signer` com business logic
-  - **Use Cases**: `CreateCompanyUseCase`, `CreateDocumentUseCase`, `AssignSignersUseCase`
-  - **Repositories**: Interfaces `ICompanyRepository`, `IDocumentRepository`, `ISignerRepository`
-  - **DTOs**: `CreateCompanyDTO`, `DocumentResponseDTO`, `SignerDTO`
-  - **Frameworks**: Django models, DRF serializers, viewsets
-  - Rotas RESTful (`/api/companies/`, `/api/documents/`, `/api/signers/`).
+  - **TDD**: Testes para entities e use cases antes da implementação
+  - **Fakes**: Repositórios in-memory em `tests/fakes/` para testar use cases sem DB
+  - **Entities**: `Company`, `Document`, `Signer` com regras de negócio
+  - **Use Cases**: `CreateCompanyUseCase`, `CreateDocumentUseCase`, `AssignSignersUseCase` (dependem de Entities e recebem repositórios concretos)
+  - **Repositories**: Implementações Django ORM + mapeamento para entidades
+  - **API**: DRF (serializers/views/routers) pode usar providers ou instanciar use cases diretamente
+  - Endpoints RESTful (`/api/companies/`, `/api/documents/`, `/api/signers/`).
 - **Critérios de aceite**:
-  - **TDD Red-Green-Refactor**: Todos os use cases implementados com TDD
-  - **Dependency Inversion**: Use cases dependem apenas de interfaces
-  - **Business Logic**: Entities contêm regras de negócio (ex: `document.can_be_signed()`)
-  - "Dado que o usuário acessa o painel da empresa, então deve ser possível criar, listar, editar e excluir Companies, Documents e Signers, com interface fluida (sem reload)."
+  - **TDD Red-Green-Refactor**: Todos os use cases implementados com TDD usando fakes
+  - **Isolamento do ORM**: Conversões Model↔Entity via `core/orm/mappers.py`
+  - **Injeção**: Use cases recebem repositórios concretos por construtor (providers opcionais)
+  - **Business Logic**: Entities contêm regras (ex: `document.can_be_signed()`)
+  - "Dado que o usuário acessa o painel, então deve ser possível criar, listar, editar e excluir Companies, Documents e Signers via API DRF."
 - **Comandos úteis**:
   - `make manage cmd='startapp core'`, `make test`.
 
-## M3 — Integração ZapSign (criação de documento) - Clean Architecture
-- **Objetivo**: Ao criar um `Document`, enviar para a API ZapSign seguindo Clean Architecture.
+## M3 — Integração ZapSign (criação de documento)
+- **Objetivo**: Ao criar um `Document`, enviar para a API ZapSign seguindo a arquitetura simplificada.
 - **Entregáveis**:
   ```
   core/
-  ├── entities/
-  │   └── document.py   # Business rules para ZapSign integration
   ├── use_cases/
-  │   └── create_document_with_zapsign.py  # Use case orchestration
-  ├── interfaces/
-  │   └── services.py   # IZapSignService interface
-  └── frameworks/
-      └── external/
-          └── zapsign/
-              ├── client.py    # HTTP client implementation
-              └── service.py   # ZapSignService (implements IZapSignService)
+  │   └── create_document_with_zapsign.py  # Orquestração
+  └── services/
+      └── zapsign/
+          ├── client.py     # HTTP client
+          └── service.py    # ZapSignService (lida com API externa)
+
+  core/app/providers/            # Factories opcionais para injetar o service no use case
   ```
-  - **TDD**: Testes unitários para use case com mock de IZapSignService
-  - **Interface**: `IZapSignService` com métodos `create_document()`, `get_document_status()`
-  - **Implementation**: `ZapSignService` com timeouts e retries
-  - **Entity Logic**: `Document.integrate_with_zapsign()` business rules
+  - **TDD**: Testes unitários para use case com mock do serviço ZapSign
+  - **Service**: `ZapSignService` com métodos `create_document()`, `get_document_status()` (com timeouts e retries)
+  - **Entity Logic**: `Document` armazena `token` e `open_id` retornados
   - **Use Case**: `CreateDocumentWithZapSignUseCase` orquestra entity + service
   - Configuração de credenciais via env (`ZAPSIGN_API_KEY`, `ZAPSIGN_BASE_URL`).
 - **Critérios de aceite**:
   - **TDD**: Use case testado com mock antes da implementação
-  - **Clean Architecture**: ZapSign como detail, não afeta entities/use cases
-  - **SOLID**: Service implementa interface, use case depende de abstração
+  - **Acoplamento controlado**: ZapSign como detalhe de implementação; use case recebe o service por injeção
   - "Dado que o usuário cria um novo documento, então ele deve ser enviado automaticamente para a API da ZapSign, armazenando o token e open_id retornados."
 - **Notas**:
   - Primeira versão síncrona; processamento assíncrono em M7.
@@ -97,55 +119,49 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   │   └── document_analysis.py  # DocumentAnalysis entity
   ├── use_cases/
   │   └── analyze_document.py   # AnalyzeDocumentUseCase
-  ├── interfaces/
-  │   ├── services.py           # IAnalysisService interface
-  │   └── repositories.py      # IDocumentAnalysisRepository
-  └── frameworks/
-      ├── django/
-      │   └── models.py         # DocumentAnalysis Django model
-      └── external/
-          └── analysis/
-              ├── ai_service.py  # AIAnalysisService implementation
-              └── heuristic_service.py  # HeuristicAnalysisService (MVP)
+  ├── services/
+  │   └── analysis/
+  │       ├── ai_service.py         # AIAnalysisService (concreto)
+  │       └── heuristic_service.py  # HeuristicAnalysisService (MVP)
+  └── orm/
+      └── models.py                 # (se precisar) modelos relacionados à análise
   ```
   - **TDD**: Testes para entity business logic e use case
   - **Entity**: `DocumentAnalysis` com `missing_topics`, `summary`, `insights`
   - **Use Case**: `AnalyzeDocumentUseCase` orquestra análise e persistência
-  - **Interface**: `IAnalysisService.analyze(text) -> AnalysisResult`
-  - **Implementations**: MVP heurístico + preparação para LLM
+  - **Serviços**: MVP heurístico + preparação para LLM
   - Endpoint para solicitar nova análise (`POST /api/documents/{id}/analyze`)
 - **Critérios de aceite**:
   - **TDD**: Business logic testada independentemente de IA provider
-  - **Strategy Pattern**: Múltiplas implementações de IAnalysisService
+- **Pluggable Strategy**: múltiplas implementações de serviço de análise
   - **Entity Rules**: `Document.can_be_analyzed()`, `DocumentAnalysis.is_complete()`
   - "Dado que o documento é salvo, então o sistema deve analisar seu conteúdo com IA e apresentar uma visão com tópicos faltantes, resumo e insights úteis."
 - **Notas**:
   - MVP: heurísticas/embeddings open-source; evolução LLM posterior.
 
-## M5 — API Pública Autenticada (Integração Externa) - Clean Architecture
-- **Objetivo**: Expor endpoints RESTful autenticados seguindo Clean Architecture.
+## M5 — API Pública Autenticada (Integração Externa)
+- **Objetivo**: Expor endpoints RESTful autenticados.
 - **Entregáveis**:
   ```
   api/
-  ├── v1/
-  │   ├── auth/          # JWT authentication endpoints
-  │   ├── companies/     # Company API endpoints
-  │   ├── documents/     # Document API endpoints
-  │   └── reports/       # Reporting endpoints
+  ├── auth/              # JWT authentication endpoints
+  ├── companies/         # Company API endpoints
+  ├── documents/         # Document API endpoints
+  ├── reports/           # Reporting endpoints
   └── middleware.py      # Custom middleware
   
   core/
-  ├── use_cases/
-  │   ├── authenticate_user.py
-  │   ├── generate_report.py
-  │   └── create_api_document.py
-  └── interfaces/
-      └── auth.py        # IAuthService, ITokenService
+  └── use_cases/
+      ├── authenticate_user.py
+      ├── generate_report.py
+      └── create_api_document.py
+  
+  core/services/         # Serviços concretos (ex.: auth/token) se necessário
   ```
   - **TDD**: Testes de integração para todos os endpoints
   - **Authentication**: JWT com `djangorestframework-simplejwt`
-  - **Use Cases**: Específicos para API pública (diferentes do admin)
-  - **Versioning**: `/api/...` estrutura
+  - **Use Cases**: Específicos para API pública
+  - **Versioning**: não versionado inicialmente (`/api/...`)
   - **OpenAPI**: Schema automático com `drf-spectacular`
   - **Endpoints**: criar `Document`, disparar análise, relatórios por período/company
 - **Critérios de aceite**:
@@ -185,19 +201,14 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   ```
   core/
   ├── use_cases/
-  │   ├── async_create_document.py     # Async version of use cases
+  │   ├── async_create_document.py     # Versões assíncronas dos use cases
   │   └── async_analyze_document.py
-  ├── interfaces/
-  │   └── queues.py                    # ITaskQueue, IJobScheduler
-  └── frameworks/
-      ├── celery/
-      │   ├── tasks.py                 # Celery task definitions
-      │   └── worker.py                # Worker configuration
-      └── redis/
-          └── queue_service.py         # Redis queue implementation
+  ├── services/
+  │   └── queue_service.py             # QueueService (Celery/Redis)
+  └── tasks/
+      └── celery_app.py                # Celery app e tasks
   ```
   - **Async Use Cases**: Versões assíncronas dos use cases
-  - **Queue Interface**: `ITaskQueue` para abstração de filas
   - **Celery Tasks**: `send_to_zapsign.delay()`, `run_analysis.delay()`
   - **Retry Logic**: Exponential backoff, dead letter queues
   - **Monitoring**: Task status tracking
@@ -207,28 +218,23 @@ Este documento organiza o trabalho em módulos incrementais seguindo Clean Archi
   - **Monitoring**: Status de jobs visível no admin
   - **Performance**: UX não bloqueada por operações externas
 
-## M8 — Testes Automatizados e Qualidade - Clean Architecture
-- **Objetivo**: Cobertura completa seguindo as camadas da Clean Architecture.
+## M8 — Testes Automatizados e Qualidade
+- **Objetivo**: Cobertura completa com foco nas regras de negócio e integrações principais.
 - **Entregáveis**:
   ```
-  core/tests/
-  ├── test_entities/           # Unit tests - business logic puro
-  ├── test_use_cases/          # Unit tests - orchestration com mocks
-  ├── test_interfaces/         # Contract tests
-  └── test_frameworks/         # Integration tests - Django/DB/APIs
-  
   tests/
-  ├── integration/             # End-to-end tests
-  ├── factories/               # Factory Boy test data
-  └── fixtures/                # Test fixtures
+  ├── test_entities/           # Unit tests - business logic puro
+  ├── test_use_cases/          # Unit tests - orquestração com fakes/mocks
+  ├── test_frameworks/         # Integration tests - Django/DB/APIs
+  ├── factories/               # Factory Boy test data (opcional)
+  └── fixtures/                # Test fixtures (opcional)
   ```
   - **Entity Tests**: Regras de negócio sem dependências externas
-  - **Use Case Tests**: Mocking de repositories e services
-  - **Integration Tests**: Testes completos com BD real
-  - **Contract Tests**: Verificação de interfaces
-  - **Coverage**: >90% entities e use cases, >80% frameworks
+  - **Use Case Tests**: Fakes para repositories/services e asserts de orquestração
+  - **Integration Tests**: Rotas DRF com banco de testes
+  - **Coverage**: Prioridade em entities e use cases
 - **Critérios de aceite**:
-  - **TDD Compliance**: Todos os módulos implementados com TDD
+  - **TDD Compliance**: Implementação dirigida por testes
   - **Layer Testing**: Cada camada testada adequadamente
   - **Fast Tests**: Unit tests executam em <5s
   - **CI Ready**: Pipeline automatizado de testes
