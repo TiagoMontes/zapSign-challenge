@@ -6,38 +6,28 @@
 
 ## Project Structure & Module Organization
 - Root: `compose.yaml`, `Dockerfile`, `Makefile`, `requirements.txt`, `.env.example`, `BACKEND_DELIVERY_PLAN.md`.
-- **Clean Architecture Structure** (after bootstrap):
+- Structure (Clean, simplificada):
   ```
-  core/                 # Main application module
-  ├── entities/         # Business entities and rules
-  │   ├── __init__.py
-  │   ├── user.py
-  │   ├── document.py
-  │   └── company.py
-  ├── use_cases/        # Application business logic
-  │   ├── __init__.py
-  │   ├── create_user.py
-  │   ├── sign_document.py
-  │   └── analyze_document.py
-  ├── interfaces/       # Contracts and abstractions
-  │   ├── __init__.py
-  │   ├── repositories.py  # Repository interfaces
-  │   ├── services.py      # External service interfaces
-  │   └── dtos.py          # Data Transfer Objects
-  └── frameworks/       # External frameworks and infrastructure
-      ├── django/       # Django-specific implementations
-      │   ├── models.py     # Django ORM models
-      │   ├── serializers.py # DRF serializers
-      │   ├── views.py      # DRF viewsets
-      │   ├── urls.py       # URL routing
-      │   └── admin.py      # Django admin
-      ├── repositories.py   # Repository implementations
-      └── external/         # Third-party integrations
+  core/
+  ├── domain/
+  │   └── entities/                 # Pure domain entities (no Django)
+  ├── use_cases/                    # Application business logic (interactors)
+  ├── orm/
+  │   ├── models.py                 # Django ORM models
+  │   └── mappers.py                # Model ↔ Entity mapping
+  ├── repositories/                 # Concrete repositories using Django ORM
+  └── app/
+      └── providers/                # Optional DI factories for use cases
+
+  api/
+  ├── serializers/                  # DRF serializers
+  ├── views/                        # DRF viewsets/controllers
+  └── routers.py                    # DRF router (mounted under /api)
   ```
-- **Additional modules**: Follow same Clean Architecture structure pattern
-- **Django Configuration**: `config/` (settings, urls, wsgi/asgi)
-- **Tests**: `core/tests/` organized by layer (`test_entities/`, `test_use_cases/`, `test_frameworks/`)
-- **Assets**: static/media folders configured later (`STATIC_ROOT=staticfiles`, `media/`)
+- Additional modules: Follow the same pattern.
+- Django Configuration: `config/` (settings, urls, wsgi/asgi). Migrations in `core/migrations/`.
+- Tests: `tests/` organized por camada e fakes (`test_entities/`, `test_use_cases/`, `test_frameworks/`, `fakes/`).
+- Assets: static/media folders configured later (`STATIC_ROOT=staticfiles`, `media/`).
 
 ## Build, Test, and Development Commands
 - `make env` — copy `.env.example` to `.env` if missing.
@@ -56,61 +46,50 @@
 - **Use Cases Layer**:
   - Use case classes: `PascalCase` + `UseCase` (e.g., `CreateUserUseCase`, `SignDocumentUseCase`)
   - Use case methods: `execute()` as main entry point
-- **Interfaces Layer**:
-  - Repository interfaces: `I` + `PascalCase` + `Repository` (e.g., `IUserRepository`, `IDocumentRepository`)
-  - Service interfaces: `I` + `PascalCase` + `Service` (e.g., `INotificationService`)
-  - DTOs: `PascalCase` + `DTO` (e.g., `CreateUserDTO`, `DocumentResponseDTO`)
-- **Frameworks Layer**:
-  - Django Models: `PascalCase` + `Model` (e.g., `UserModel`, `DocumentModel`)
+- **Infra Layer**:
+  - Django Models: `PascalCase` + `Model` (em `core/orm/models.py`)
+  - Repositories: `PascalCase` + `Repository` (e.g., `UserRepository`)
+- **API Layer**:
   - Serializers: `PascalCase` + `Serializer` (e.g., `UserSerializer`)
   - ViewSets: `PascalCase` + `ViewSet` (e.g., `UserViewSet`)
-  - Repository implementations: `PascalCase` + `Repository` (e.g., `UserRepository`)
+  - Controllers podem usar providers para instanciar use cases ou instanciar diretamente repositórios/use cases.
 - **General**:
   - Functions/variables: `snake_case`
   - Constants: `UPPER_SNAKE_CASE`
   - Modules: `snake_case` (e.g., `core`, `auth_service`)
 - **URLs**: prefer `kebab-case` paths; DRF routes under `/api/`
 
-## Clean Architecture Layers
+## Clean Layers (Simplified)
 
-### **1. Entities (Business Logic)**
+### **1. Domain (Entities)**
 - **Pure business rules** independent of frameworks
 - **No external dependencies** (no imports from Django, DRF, etc.)
 - **Domain models** with behavior and validation
 - **Example**: User entity with validation rules, Document with business methods
 
-### **2. Use Cases (Application Logic)**
-- **Orchestrate business flows** using entities and interfaces
-- **Depend only on entities and interfaces** (dependency inversion)
+### **2. Use Cases (Application)**
+- **Orchestrate business flows** using entities and repositories/services
+- **Depend only on entities and injected collaborators** (constructor DI)
 - **One use case per business operation**
 - **Example**: CreateUserUseCase, SignDocumentUseCase, AnalyzeDocumentUseCase
 
-### **3. Interfaces (Contracts)**
-- **Abstract interfaces** for external dependencies
-- **Repository contracts** for data access
-- **Service contracts** for external integrations
-- **DTOs** for data transfer between layers
+### **3. Infra (ORM + Repositories)**
+- **Concrete repositories** using Django ORM
+- **External services** (clients) when needed
 
-### **4. Frameworks (Infrastructure)**
-- **Django/DRF implementations** of interfaces
-- **Database access** via ORM
-- **External API integrations**
-- **Web controllers** (ViewSets)
+### **4. API (Web Layer)**
+- **DRF controllers** (ViewSets) e serializers
+- **Pode usar providers** para instanciar use cases
 
 ## SOLID Principles Implementation
 - **Single Responsibility**: Each class has one reason to change
-  - Entities handle business rules only
-  - Use cases handle one business flow only
-  - Repositories handle data access only
-- **Open/Closed**: Use interfaces for extension without modification
-  - Repository interfaces allow different implementations
-  - Service interfaces allow different external integrations
-- **Liskov Substitution**: Interface implementations are interchangeable
-- **Interface Segregation**: Small, focused interfaces
-  - Separate interfaces for different concerns
-- **Dependency Inversion**: High-level modules depend on abstractions
-  - Use cases depend on repository interfaces, not implementations
-  - Frameworks implement interfaces defined in inner layers
+  - Entities: business rules only
+  - Use cases: orchestration only
+  - Repositories: data access only
+- **Open/Closed**: Prefer extension via composition; troque implementações por DI quando necessário
+- **Liskov Substitution**: Mantenha contratos de métodos consistentes entre implementações
+- **Interface Segregation**: Classes focadas e coesas (métodos essenciais)
+- **Dependency Inversion**: Use DI por construtor (injetando repositórios/serviços concretos)
 
 ## Testing Guidelines
 - **TDD Workflow**: All implementations must follow Test-Driven Development:
@@ -118,31 +97,23 @@
   2. **Green**: Implement minimal code to make tests pass
   3. **Refactor**: Improve code while keeping tests green
 - **Testing Strategy by Layer**:
-  - **Entity Tests** (`core/tests/test_entities/`):
+  - **Entity Tests** (`tests/test_entities/`):
     - Pure unit tests for business logic
     - No external dependencies or mocks needed
     - Test business rules and validations
-  - **Use Case Tests** (`core/tests/test_use_cases/`):
-    - Test business flows with mocked interfaces
-    - Verify use case orchestration
-    - Use dependency injection with mocks
-  - **Framework Tests** (`core/tests/test_frameworks/`):
-    - Test Django models, serializers, views
-    - Integration tests with database
-    - API endpoint tests using DRF test client
-  - **Integration Tests** (`core/tests/test_integration/`):
-    - End-to-end workflow tests
-    - Real implementations with test database
+  - **Use Case Tests** (`tests/test_use_cases/`):
+    - Testam fluxos com fakes em `tests/fakes/`
+    - Verificam orquestração e regras sem banco de dados real
 - **Test Isolation**: Use dependency injection and mocking appropriately
 - **Test Data**: Factory pattern for test data creation (e.g., `factory_boy`)
 - **Coverage**: Focus on entities and use cases (business critical logic)
 - Run tests: `make test` (Django test runner) or `pytest`
 
 ## Dependency Flow Rules
-- **Entities**: No dependencies on outer layers
-- **Use Cases**: Can depend on Entities and Interfaces only
-- **Interfaces**: Can depend on Entities only (for DTOs and contracts)
-- **Frameworks**: Can depend on all inner layers, implements interfaces
+- **Domain (Entities)**: Não dependem de camadas externas
+- **Use Cases**: Dependem de Entities e recebem repositórios/serviços por DI
+- **Infra (ORM/Repositories)**: Dependem de Django ORM e do domínio (mapeamento)
+- **API**: Depende de Use Cases/Providers; não importa ORM diretamente
 
 ## Commit & Pull Request Guidelines
 - **Commit Format**: Use aspas simples com quebra literal para commits multi-linha:
@@ -160,7 +131,7 @@
   - `docs(scope): documentation updates`
   - `test(scope): add or update tests`
   - `refactor(scope): code restructure without behavior change`
-- **Scope examples**: `api`, `core`, `dev`, `deploy`, `auth`, `entities`, `use-cases`, `frameworks`
+- **Scope examples**: `api`, `core`, `dev`, `deploy`, `auth`, `entities`, `use-cases`, `orm`, `repositories`
 - **Format example**:
   ```bash
   git commit -m 'feat(entities): add document signer management
@@ -172,18 +143,12 @@
 - PRs: clear description, steps to test, linked issues, and screenshots for UI.
 
 ## Dependency Management
-- **Required packages** for Clean Architecture:
+- **Required packages**:
   ```
   # Core
   django>=4.2
   djangorestframework>=3.14
-  
-  # Dependency injection
-  django-injector>=0.2.0
-  
-  # Data validation and serialization
-  dataclasses-json>=0.5.0
-  
+
   # Testing
   factory-boy>=3.2.0
   pytest-django>=4.5.0
