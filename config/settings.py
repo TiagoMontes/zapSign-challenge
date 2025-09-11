@@ -93,7 +93,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Route core app migrations to frameworks/django/migrations
+# Route core app migrations to core/migrations
 MIGRATION_MODULES = {
-    "core": "core.frameworks.django.migrations",
+    "core": "core.migrations",
 }

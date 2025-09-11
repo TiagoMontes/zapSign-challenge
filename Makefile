@@ -63,5 +63,4 @@ collectstatic:
 	$(MAKE) manage cmd='collectstatic --noinput'
 
 test:
-	$(MAKE) manage cmd=test
-
+	$(MAKE) manage cmd='test tests'
