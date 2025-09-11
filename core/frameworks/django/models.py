@@ -42,3 +42,4 @@ class Document(TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.name} (Company: {self.company_id})"
+

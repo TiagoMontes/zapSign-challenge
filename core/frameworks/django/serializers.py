@@ -1,32 +1,20 @@
 from rest_framework import serializers
+
 from .models import Company, Document, Signer
 
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = [
-            "id",
-            "name",
-            "api_token",
-            "created_at",
-            "last_updated_at",
-        ]
+        fields = ["id", "name", "api_token", "created_at", "last_updated_at"]
         read_only_fields = ["id", "created_at", "last_updated_at"]
 
 
 class SignerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Signer
-        fields = [
-            "id",
-            "name",
-            "email",
-            "token",
-            "status",
-            "external_id",
-        ]
-        read_only_fields = ["id"]
+        fields = ["id", "name", "email", "token", "status", "external_id"]
+        read_only_fields = ["id", "token", "status"]
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -49,5 +37,5 @@ class DocumentSerializer(serializers.ModelSerializer):
             "created_at",
             "last_updated_at",
         ]
-        read_only_fields = ["id", "created_at", "last_updated_at"]
+        read_only_fields = ["id", "open_id", "token", "created_at", "last_updated_at"]
 

@@ -92,3 +92,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# Route core app migrations to frameworks/django/migrations
+MIGRATION_MODULES = {
+    "core": "core.frameworks.django.migrations",
+}
