@@ -1,4 +1,4 @@
-.PHONY: help env build up down ps logs web/sh db/sh db/psql bootstrap manage migrate createsuperuser collectstatic test
+.PHONY: help env build up down ps logs web/sh db/sh db/psql bootstrap manage migrate createsuperuser collectstatic test typecheck validate
 
 DEFAULT_GOAL := help
 
@@ -18,6 +18,8 @@ help:
 	@echo "  migrate          Run database migrations"
 	@echo "  createsuperuser  Create Django superuser"
 	@echo "  test             Run Django tests"
+	@echo "  typecheck        Run Pyright type checking"
+	@echo "  validate         Run all validation (typecheck + test)"
 
 env:
 	@test -f .env || cp .env.example .env
@@ -64,3 +66,8 @@ collectstatic:
 
 test:
 	$(MAKE) manage cmd='test tests'
+
+typecheck:
+	pyright .
+
+validate: typecheck test

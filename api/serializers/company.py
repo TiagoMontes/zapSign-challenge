@@ -1,11 +1,10 @@
 from rest_framework import serializers
 
-from core.orm.models import Company
 
-
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = ["id", "name", "api_token", "created_at", "last_updated_at"]
-        read_only_fields = ["id", "created_at", "last_updated_at"]
+class CompanySerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=255)
+    api_token = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    last_updated_at = serializers.DateTimeField(read_only=True)
 

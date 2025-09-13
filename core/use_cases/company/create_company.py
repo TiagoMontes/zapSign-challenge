@@ -1,9 +1,9 @@
 from core.domain.entities.company import Company
-from core.repositories.company_repo import CompanyRepository
+from core.repositories.contracts import CompanyRepositoryProtocol
 
 
 class CreateCompanyUseCase:
-    def __init__(self, company_repo: CompanyRepository) -> None:
+    def __init__(self, company_repo: CompanyRepositoryProtocol) -> None:
         self._company_repo = company_repo
 
     def execute(self, company: Company) -> Company:

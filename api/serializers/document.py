@@ -1,27 +1,18 @@
 from rest_framework import serializers
 
-from core.orm.models import Document, Signer
 
-
-class DocumentSerializer(serializers.ModelSerializer):
-    signers = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Signer.objects.all(), required=False
+class DocumentSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    company = serializers.IntegerField()
+    name = serializers.CharField(max_length=255)
+    signers = serializers.ListField(
+        child=serializers.IntegerField(), required=False, allow_empty=True
     )
-
-    class Meta:
-        model = Document
-        fields = [
-            "id",
-            "company",
-            "open_id",
-            "token",
-            "name",
-            "status",
-            "created_by",
-            "external_id",
-            "signers",
-            "created_at",
-            "last_updated_at",
-        ]
-        read_only_fields = ["id", "open_id", "token", "created_at", "last_updated_at"]
+    status = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    token = serializers.CharField(max_length=255, read_only=True)
+    open_id = serializers.IntegerField(read_only=True, allow_null=True)
+    created_by = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    external_id = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    last_updated_at = serializers.DateTimeField(read_only=True)
 

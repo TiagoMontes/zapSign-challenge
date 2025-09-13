@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 
 from core.domain.entities.company import Company
 from tests.fakes.company_repo import InMemoryCompanyRepository
-from core.use_cases.create_company import CreateCompanyUseCase
+from core.use_cases.company.create_company import CreateCompanyUseCase
 
 
 class CreateCompanyUseCaseTests(SimpleTestCase):

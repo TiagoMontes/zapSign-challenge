@@ -1,20 +1,20 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
 class Document:
-    id: int | None = None
-    company_id: int | None = None
+    id: Optional[int] = None
+    company_id: Optional[int] = None
     name: str = ""
     status: str = ""
     token: str = ""
-    open_id: int | None = None
+    open_id: Optional[int] = None
     created_by: str = ""
     external_id: str = ""
-    created_at: datetime | None = None
-    last_updated_at: datetime | None = None
+    created_at: Optional[datetime] = None
+    last_updated_at: Optional[datetime] = None
     signer_ids: List[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:

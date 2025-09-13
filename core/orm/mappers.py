@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Any, Iterable
 
 from core.domain.entities.company import Company as CompanyEntity
 from core.domain.entities.document import Document as DocumentEntity
@@ -8,11 +8,17 @@ from core.domain.entities.signer import Signer as SignerEntity
 from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
 
 
-def company_model_to_entity(obj: CompanyModel) -> CompanyEntity:
-    return CompanyEntity(id=obj.id, name=str(obj.name), api_token=str(obj.api_token))
+def company_model_to_entity(obj: Any) -> CompanyEntity:
+    return CompanyEntity(
+        id=obj.id,
+        name=str(obj.name),
+        api_token=str(obj.api_token),
+        created_at=obj.created_at,
+        last_updated_at=obj.last_updated_at,
+    )
 
 
-def signer_model_to_entity(obj: SignerModel) -> SignerEntity:
+def signer_model_to_entity(obj: Any) -> SignerEntity:
     return SignerEntity(
         id=obj.id,
         name=str(obj.name),
@@ -20,10 +26,12 @@ def signer_model_to_entity(obj: SignerModel) -> SignerEntity:
         token=str(obj.token),
         status=str(obj.status),
         external_id=str(obj.external_id),
+        created_at=getattr(obj, 'created_at', None),
+        last_updated_at=getattr(obj, 'last_updated_at', None),
     )
 
 
-def document_model_to_entity(obj: DocumentModel) -> DocumentEntity:
+def document_model_to_entity(obj: Any) -> DocumentEntity:
     signer_ids = list(obj.signers.values_list("id", flat=True)) if obj.id else []
     return DocumentEntity(
         id=obj.id,
@@ -66,14 +74,13 @@ def document_entity_to_model_data(entity: DocumentEntity) -> dict:
     }
 
 
-def map_companies(objs: Iterable[CompanyModel]) -> list[CompanyEntity]:
+def map_companies(objs: Iterable[Any]) -> list[CompanyEntity]:
     return [company_model_to_entity(o) for o in objs]
 
 
-def map_signers(objs: Iterable[SignerModel]) -> list[SignerEntity]:
+def map_signers(objs: Iterable[Any]) -> list[SignerEntity]:
     return [signer_model_to_entity(o) for o in objs]
 
 
-def map_documents(objs: Iterable[DocumentModel]) -> list[DocumentEntity]:
+def map_documents(objs: Iterable[Any]) -> list[DocumentEntity]:
     return [document_model_to_entity(o) for o in objs]
-
