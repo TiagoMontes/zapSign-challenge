@@ -26,7 +26,7 @@
   ```
 - Additional modules: Follow the same pattern.
 - Django Configuration: `config/` (settings, urls, wsgi/asgi). Migrations in `core/migrations/`.
-- Tests: `tests/` organized por camada e fakes (`test_entities/`, `test_use_cases/`, `test_frameworks/`, `fakes/`).
+- Tests: `tests/` organized por camada e fakes (`test_entities/`, `test_use_cases/`, `fakes/`).
 - Assets: static/media folders configured later (`STATIC_ROOT=staticfiles`, `media/`).
 
 ## Build, Test, and Development Commands
@@ -107,7 +107,7 @@
 - **Test Isolation**: Use dependency injection and mocking appropriately
 - **Test Data**: Factory pattern for test data creation (e.g., `factory_boy`)
 - **Coverage**: Focus on entities and use cases (business critical logic)
-- Run tests: `make test` (Django test runner) or `pytest`
+- Run tests: `make test` (Django test runner)
 
 ## Dependency Flow Rules
 - **Domain (Entities)**: Não dependem de camadas externas
@@ -150,8 +150,7 @@
   djangorestframework>=3.14
 
   # Testing
-  factory-boy>=3.2.0
-  pytest-django>=4.5.0
+  Django test
   ```
 
 ## Security & Configuration Tips

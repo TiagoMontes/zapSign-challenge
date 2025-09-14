@@ -33,27 +33,11 @@ You test application logic orchestration:
 - Test the coordination between entities and repositories
 - Verify that use cases call the right methods in the right order
 
-### Repositories (tests/test_frameworks/)
-You test data persistence layer:
-- Use Django TestCase and test database
-- Validate CRUD operations
-- Test complex queries and filters
-- Verify Model ↔ Entity mapping correctness
-- Ensure transaction behavior works as expected
-
-### API (tests/test_frameworks/)
-You test HTTP endpoints comprehensively:
-- Use DRF's APIClient or APITestCase
-- Test complete request-response cycles
-- Validate status codes and response structures
-- Test authentication and authorization
-- Cover validation errors and edge cases
-
 ## Test Structure Guidelines
 
 You organize tests with precision:
 - One test file per module/class being tested
-- Group by architectural layer: `test_entities/`, `test_use_cases/`, `test_frameworks/`
+- Group by architectural layer: `test_entities/`, `test_use_cases/`
 - Use pytest fixtures for common setups
 - Apply `@pytest.mark.parametrize` for multiple similar scenarios
 - Implement simple, reusable fakes in `tests/fakes/` directory

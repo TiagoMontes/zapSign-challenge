@@ -11,7 +11,7 @@ class TimeStampedModel(models.Model):
 
 class Company(TimeStampedModel):
     name = models.CharField(max_length=255)
-    api_token = models.CharField(max_length=255, blank=True, default="")
+    api_token = models.CharField(max_length=255)
     objects = models.Manager()
 
     def __str__(self) -> str:

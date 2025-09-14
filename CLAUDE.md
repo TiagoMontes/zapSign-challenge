@@ -49,7 +49,6 @@ api/                              # REST API layer
 tests/                            # Test suite
 ├── test_entities/                # Domain entity tests
 ├── test_use_cases/               # Use case tests
-├── test_frameworks/              # Framework integration tests
 └── fakes/                        # Test doubles and mocks
 ```
 

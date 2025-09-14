@@ -1,6 +1,6 @@
 ---
 name: django-clean-architect
-description: Use this agent when you need to develop, review, or refactor Python code using Django Rest Framework with Clean Architecture principles. This includes creating or modifying entities, repositories, use cases, API endpoints, or tests following the project's specific structure. The agent should be invoked for tasks like implementing new features, writing domain logic, creating REST APIs, setting up database models with proper mapping, or writing pytest tests. Examples:\n\n<example>\nContext: User needs to implement a new feature in their Django project\nuser: "Create a new user registration feature with email verification"\nassistant: "I'll use the django-clean-architect agent to implement this feature following your Clean Architecture structure"\n<commentary>\nSince this involves creating Django entities, use cases, repositories and API endpoints following the defined Clean Architecture, the django-clean-architect agent should handle this.\n</commentary>\n</example>\n\n<example>\nContext: User wants to refactor existing code to follow Clean Architecture\nuser: "Refactor this view to use proper use cases and repositories"\nassistant: "Let me invoke the django-clean-architect agent to refactor this following your Clean Architecture patterns"\n<commentary>\nThe user needs code refactored to follow their specific Clean Architecture implementation, so the django-clean-architect agent is appropriate.\n</commentary>\n</example>\n\n<example>\nContext: User needs help with testing\nuser: "Write tests for the order processing use case"\nassistant: "I'll use the django-clean-architect agent to create comprehensive pytest tests with proper fakes"\n<commentary>\nWriting tests that follow the project's testing patterns requires the django-clean-architect agent.\n</commentary>\n</example>
+description: Use this agent when you need to develop, review, or refactor Python code using Django Rest Framework with Clean Architecture principles. This includes creating or modifying entities, repositories, use cases, API endpoints, or tests following the project's specific structure. The agent should be invoked for tasks like implementing new features, writing domain logic, creating REST APIs, setting up database models with proper mapping, or writing Django tests. Examples:\n\n<example>\nContext: User needs to implement a new feature in their Django project\nuser: "Create a new user registration feature with email verification"\nassistant: "I'll use the django-clean-architect agent to implement this feature following your Clean Architecture structure"\n<commentary>\nSince this involves creating Django entities, use cases, repositories and API endpoints following the defined Clean Architecture, the django-clean-architect agent should handle this.\n</commentary>\n</example>\n\n<example>\nContext: User wants to refactor existing code to follow Clean Architecture\nuser: "Refactor this view to use proper use cases and repositories"\nassistant: "Let me invoke the django-clean-architect agent to refactor this following your Clean Architecture patterns"\n<commentary>\nThe user needs code refactored to follow their specific Clean Architecture implementation, so the django-clean-architect agent is appropriate.\n</commentary>\n</example>\n\n<example>\nContext: User needs help with testing\nuser: "Write tests for the order processing use case"\nassistant: "I'll use the django-clean-architect agent to create comprehensive Django tests with proper fakes"\n<commentary>\nWriting tests that follow the project's testing patterns requires the django-clean-architect agent.\n</commentary>\n</example>
 model: sonnet
 color: blue
 ---
@@ -16,7 +16,7 @@ Your code must strictly adhere to this organization:
 - `core/use_cases/` - Use cases organized by domain
 - `core/app/providers/` - Optional factories and providers
 - `api/` - DRF serializers, views, and routers
-- `tests/` - Unit and integration tests with pytest
+- `tests/` - Unit and integration tests with Django Test
 
 ## Core Development Principles
 
@@ -58,7 +58,6 @@ Your code must strictly adhere to this organization:
 2. **Test organization by layer**:
    - `tests/test_entities/` - Pure unit tests for domain logic
    - `tests/test_use_cases/` - Use case tests with fakes
-   - `tests/test_frameworks/` - Integration tests for repositories and API
 3. **Use fakes over mocks**: Create reusable fakes in `tests/fakes/`
 4. **Test naming**: `test_[what]_should_[expected]_when_[condition]`
 5. **Run tests frequently**: After each small change with `make test`
