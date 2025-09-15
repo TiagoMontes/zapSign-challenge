@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-from typing import Any, Iterable
+from typing import Any, Iterable, Union, TYPE_CHECKING
+from django.db.models import QuerySet
+
+if TYPE_CHECKING:
+    # For type checking, import the models directly
+    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
 
 from core.domain.entities.company import Company as CompanyEntity
 from core.domain.entities.document import Document as DocumentEntity
 from core.domain.entities.signer import Signer as SignerEntity
-from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
+
+if not TYPE_CHECKING:
+    # At runtime, import normally
+    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
 
 
 def company_model_to_entity(obj: Any) -> CompanyEntity:
@@ -74,15 +82,15 @@ def document_entity_to_model_data(entity: DocumentEntity) -> dict:
     }
 
 
-def map_companies(objs: Iterable[Any]) -> list[CompanyEntity]:
+def map_companies(objs: Union[QuerySet[CompanyModel], Iterable[CompanyModel]]) -> list[CompanyEntity]:
     return [company_model_to_entity(o) for o in objs]
 
 
-def map_signers(objs: Iterable[Any]) -> list[SignerEntity]:
+def map_signers(objs: Union[QuerySet[SignerModel], Iterable[SignerModel]]) -> list[SignerEntity]:
     return [signer_model_to_entity(o) for o in objs]
 
 
-def map_documents(objs: Iterable[Any]) -> list[DocumentEntity]:
+def map_documents(objs: Union[QuerySet[DocumentModel], Iterable[DocumentModel]]) -> list[DocumentEntity]:
     return [document_model_to_entity(o) for o in objs]
 
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, cast
+from typing import Any, Optional
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -46,18 +46,21 @@ class CompanyViewSet(BaseAPIViewSet):
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
-        validated_data = cast(Dict[str, Any], serializer.validated_data)
+        validated_data = serializer.validated_data
         if not validated_data:
             return self.error_response(
                 message="No valid data provided",
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
+        # Type assertion for validated_data
+        assert isinstance(validated_data, dict), "Validated data must be a dictionary"
+
         try:
             use_case = CreateCompany(self._repository)
             input_data = CreateCompanyInput(
-                name=validated_data['name'],
-                api_token=validated_data['api_token']
+                name=str(validated_data['name']),
+                api_token=str(validated_data['api_token'])
             )
             company = use_case.execute(input_data)  # type: ignore[reportArgumentType]
             response_serializer = CompanySerializer(company)
@@ -137,19 +140,22 @@ class CompanyViewSet(BaseAPIViewSet):
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
-        validated_data = cast(Dict[str, Any], serializer.validated_data)
+        validated_data = serializer.validated_data
         if not validated_data:
             return self.error_response(
                 message="No valid data provided",
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
+        # Type assertion for validated_data
+        assert isinstance(validated_data, dict), "Validated data must be a dictionary"
+
         try:
             use_case = UpdateCompany(self._repository)
             input_data = UpdateCompanyInput(
                 company_id=company_id,
-                name=validated_data['name'],
-                api_token=validated_data['api_token']
+                name=str(validated_data['name']),
+                api_token=str(validated_data['api_token'])
             )
             company = use_case.execute(input_data)  # type: ignore[reportArgumentType]
             response_serializer = CompanySerializer(company)

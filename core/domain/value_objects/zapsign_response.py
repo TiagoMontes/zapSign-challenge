@@ -1,5 +1,86 @@
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, TypedDict
+
+
+class ZapSignSignerAPIData(TypedDict, total=False):
+    """TypedDict for ZapSign signer API response data."""
+    token: str
+    name: str
+    status: str
+    email: str
+    external_id: str
+    sign_url: str
+    lock_name: bool
+    lock_email: bool
+    hide_email: bool
+    blank_email: bool
+    phone_country: str
+    phone_number: str
+    lock_phone: bool
+    hide_phone: bool
+    blank_phone: bool
+    times_viewed: int
+    last_view_at: Optional[str]
+    signed_at: Optional[str]
+    auth_mode: str
+    qualification: str
+    require_selfie_photo: bool
+    require_document_photo: bool
+    geo_latitude: Optional[float]
+    geo_longitude: Optional[float]
+    redirect_link: str
+    signature_image: Optional[str]
+    visto_image: Optional[str]
+    document_photo_url: str
+    document_verse_photo_url: str
+    selfie_photo_url: str
+    selfie_photo_url2: str
+    send_via: str
+    resend_attempts: Optional[int]
+    cpf: str
+    cnpj: str
+    send_automatic_whatsapp_signed_file: Optional[bool]
+    liveness_photo_url: str
+    selfie_validation_type: str
+    ip: Optional[str]
+    delegator: Optional[str]
+    signature_anchor_text: Optional[str]
+    rubrica_anchor_text: Optional[str]
+
+
+class ZapSignDocumentAPIData(TypedDict, total=False):
+    """TypedDict for ZapSign document API response data."""
+    token: str
+    name: str
+    status: str
+    open_id: int
+    external_id: str
+    created_by: Dict[str, Any]
+    sandbox: bool
+    folder_path: str
+    folder_token: Optional[str]
+    rejected_reason: Optional[str]
+    lang: str
+    original_file: str
+    signed_file: Optional[str]
+    extra_docs: List[Dict[str, Any]]
+    created_through: str
+    deleted: bool
+    deleted_at: Optional[str]
+    signed_file_only_finished: bool
+    disable_signer_emails: bool
+    brand_logo: str
+    brand_primary_color: str
+    created_at: str
+    last_update_at: str
+    template: Optional[str]
+    signers: List[ZapSignSignerAPIData]
+    answers: List[Dict[str, Any]]
+    auto_reminder: int
+    signature_report: Optional[str]
+    tsa_country: Optional[str]
+    use_timestamp: bool
+    metadata: List[Dict[str, Any]]
 
 
 @dataclass

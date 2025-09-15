@@ -66,8 +66,9 @@ class ZapSignDocumentViewSet(BaseAPIViewSet):
                 )
 
             # 2. Get company by ID from request
-            validated_data = cast(Dict[str, Any], serializer.validated_data)
-            company_id: int = validated_data["company_id"]
+            validated_data = serializer.validated_data
+            assert isinstance(validated_data, dict), "Validated data must be a dictionary"
+            company_id: int = int(validated_data["company_id"])
             company = self._get_company_from_request(company_id)
             if not company:
                 return self.error_response(
@@ -76,7 +77,7 @@ class ZapSignDocumentViewSet(BaseAPIViewSet):
                 )
 
             # 3. Convert to ZapSign request
-            # Type cast to access our custom method
+            # Type assertion: serializer is ZapSignDocumentCreateSerializer, not ListSerializer
             document_serializer = cast(ZapSignDocumentCreateSerializer, serializer)
             zapsign_request = document_serializer.to_zapsign_request()
 
