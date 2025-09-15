@@ -16,12 +16,7 @@ from api.serializers.zapsign_document import (
 from core.domain.entities.company import Company
 from core.orm.models import Company as CompanyModel
 from core.orm.mappers import CompanyMapper
-from core.services.zapsign_service import ZapSignService
-from core.repositories.document_repo import DjangoDocumentRepository
-from core.repositories.signer_repo import DjangoSignerRepository
-from core.use_cases.document.create_document_from_upload import (
-    CreateDocumentFromUploadUseCase,
-)
+from core.app.providers.document import DocumentProvider
 from core.services.exceptions import (
     ZapSignAuthenticationError,
     ZapSignValidationError,
@@ -44,6 +39,11 @@ class ZapSignDocumentViewSet(BaseAPIViewSet):
     # Add empty queryset to avoid permission error
     queryset = None
     permission_classes = []  # Disable default permissions for this viewset
+
+    def __init__(self, **kwargs):
+        """Initialize viewset with injected dependencies."""
+        super().__init__(**kwargs)
+        self.create_document_use_case = DocumentProvider.get_create_document_use_case()
 
     def _get_company_from_request(self, company_id: int) -> Optional[Company]:
         """Get company by ID from request data."""
@@ -80,18 +80,8 @@ class ZapSignDocumentViewSet(BaseAPIViewSet):
             document_serializer = cast(ZapSignDocumentCreateSerializer, serializer)
             zapsign_request = document_serializer.to_zapsign_request()
 
-            # 4. Execute use case
-            zapsign_service = ZapSignService()
-            document_repository = DjangoDocumentRepository()
-            signer_repository = DjangoSignerRepository()
-
-            use_case = CreateDocumentFromUploadUseCase(
-                zapsign_service=zapsign_service,
-                document_repository=document_repository,
-                signer_repository=signer_repository,
-            )
-
-            result = use_case.execute(company=company, request=zapsign_request)
+            # 4. Execute use case (dependency injection via provider)
+            result = self.create_document_use_case.execute(company=company, request=zapsign_request)
 
             # 5. Serialize response
             zapsign_response_serializer = ZapSignDocumentResponseSerializer(
