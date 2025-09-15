@@ -65,7 +65,7 @@ collectstatic:
 	$(MAKE) manage cmd='collectstatic --noinput'
 
 test:
-	$(MAKE) manage cmd='test tests'
+	$(MAKE) manage cmd='test tests --keepdb'
 
 typecheck:
 	pyright .

@@ -84,3 +84,45 @@ def map_signers(objs: Iterable[Any]) -> list[SignerEntity]:
 
 def map_documents(objs: Iterable[Any]) -> list[DocumentEntity]:
     return [document_model_to_entity(o) for o in objs]
+
+
+class DocumentMapper:
+    """Mapper for Document entities and models."""
+
+    @staticmethod
+    def to_entity(model: DocumentModel) -> DocumentEntity:
+        """Convert Django model to domain entity."""
+        return document_model_to_entity(model)
+
+    @staticmethod
+    def to_model_data(entity: DocumentEntity) -> dict:
+        """Convert domain entity to model data."""
+        return document_entity_to_model_data(entity)
+
+
+class SignerMapper:
+    """Mapper for Signer entities and models."""
+
+    @staticmethod
+    def to_entity(model: SignerModel) -> SignerEntity:
+        """Convert Django model to domain entity."""
+        return signer_model_to_entity(model)
+
+    @staticmethod
+    def to_model_data(entity: SignerEntity) -> dict:
+        """Convert domain entity to model data."""
+        return signer_entity_to_model_data(entity)
+
+
+class CompanyMapper:
+    """Mapper for Company entities and models."""
+
+    @staticmethod
+    def to_entity(model: CompanyModel) -> CompanyEntity:
+        """Convert Django model to domain entity."""
+        return company_model_to_entity(model)
+
+    @staticmethod
+    def to_model_data(entity: CompanyEntity) -> dict:
+        """Convert domain entity to model data."""
+        return company_entity_to_model_data(entity)
