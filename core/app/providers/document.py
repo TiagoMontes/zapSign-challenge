@@ -3,6 +3,7 @@
 from functools import lru_cache
 
 from core.services.zapsign_service import ZapSignService
+from core.services.pdf.pdf_service import PDFService
 from core.repositories.document_repo import DjangoDocumentRepository
 from core.repositories.signer_repo import DjangoSignerRepository
 from core.repositories.company_repo import CompanyRepository
@@ -41,6 +42,12 @@ class DocumentProvider:
         return CompanyRepository()
 
     @staticmethod
+    @lru_cache(maxsize=1)
+    def get_pdf_service() -> PDFService:
+        """Get PDF service instance (singleton)."""
+        return PDFService()
+
+    @staticmethod
     def get_create_document_use_case() -> CreateDocumentFromUploadUseCase:
         """
         Get configured CreateDocumentFromUploadUseCase.
@@ -52,6 +59,7 @@ class DocumentProvider:
             zapsign_service=DocumentProvider.get_zapsign_service(),
             document_repository=DocumentProvider.get_document_repository(),
             signer_repository=DocumentProvider.get_signer_repository(),
+            pdf_service=DocumentProvider.get_pdf_service(),
         )
 
     @staticmethod
@@ -95,3 +103,4 @@ class DocumentProvider:
         DocumentProvider.get_document_repository.cache_clear()
         DocumentProvider.get_signer_repository.cache_clear()
         DocumentProvider.get_company_repository.cache_clear()
+        DocumentProvider.get_pdf_service.cache_clear()

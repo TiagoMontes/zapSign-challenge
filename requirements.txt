@@ -3,3 +3,16 @@ djangorestframework>=3.15,<3.16
 psycopg[binary]>=3.2,<3.3
 gunicorn>=22.0,<23.0
 requests>=2.31,<2.32
+
+# LangChain and AI analysis dependencies
+langchain>=0.1.0,<0.2.0
+langchain-openai>=0.1.0,<0.2.0
+langchain-community>=0.0.38,<0.1.0
+chromadb>=0.4.0,<0.5.0
+tiktoken>=0.5.0,<0.6.0
+numpy>=1.24.0,<2.0.0
+openai>=1.0.0,<2.0.0
+
+# PDF processing dependencies
+pypdf>=3.0.0,<4.0.0
+python-magic>=0.4.0,<1.0.0

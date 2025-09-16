@@ -5,15 +5,16 @@ from django.db.models import QuerySet
 
 if TYPE_CHECKING:
     # For type checking, import the models directly
-    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
+    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel, DocumentAnalysis as DocumentAnalysisModel
 
 from core.domain.entities.company import Company as CompanyEntity
 from core.domain.entities.document import Document as DocumentEntity
 from core.domain.entities.signer import Signer as SignerEntity
+from core.domain.entities.document_analysis import DocumentAnalysis as DocumentAnalysisEntity
 
 if not TYPE_CHECKING:
     # At runtime, import normally
-    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel
+    from .models import Company as CompanyModel, Document as DocumentModel, Signer as SignerModel, DocumentAnalysis as DocumentAnalysisModel
 
 
 def company_model_to_entity(obj: Any) -> CompanyEntity:
@@ -56,6 +57,11 @@ def document_model_to_entity(obj: Any) -> DocumentEntity:
         is_deleted=getattr(obj, 'is_deleted', False),
         deleted_at=getattr(obj, 'deleted_at', None),
         deleted_by=getattr(obj, 'deleted_by', ''),
+        # PDF processing fields
+        pdf_url=getattr(obj, 'pdf_url', None),
+        processing_status=getattr(obj, 'processing_status', 'UPLOADED'),
+        checksum=getattr(obj, 'checksum', None),
+        version_id=getattr(obj, 'version_id', None),
     )
 
 
@@ -85,6 +91,11 @@ def document_entity_to_model_data(entity: DocumentEntity) -> dict:
         "is_deleted": entity.is_deleted,
         "deleted_at": entity.deleted_at,
         "deleted_by": entity.deleted_by,
+        # PDF processing fields
+        "pdf_url": entity.pdf_url,
+        "processing_status": entity.processing_status,
+        "checksum": entity.checksum,
+        "version_id": entity.version_id,
     }
 
 
@@ -140,3 +151,45 @@ class CompanyMapper:
     def to_model_data(entity: CompanyEntity) -> dict:
         """Convert domain entity to model data."""
         return company_entity_to_model_data(entity)
+
+
+def document_analysis_model_to_entity(obj: Any) -> DocumentAnalysisEntity:
+    """Convert DocumentAnalysis model to entity."""
+    return DocumentAnalysisEntity(
+        id=obj.id,
+        document_id=obj.document_id,
+        missing_topics=obj.missing_topics or [],
+        summary=str(obj.summary),
+        insights=obj.insights or [],
+        analyzed_at=obj.analyzed_at,
+    )
+
+
+def document_analysis_entity_to_model_data(entity: DocumentAnalysisEntity) -> dict:
+    """Convert DocumentAnalysis entity to model data."""
+    return {
+        "document_id": entity.document_id,
+        "missing_topics": entity.missing_topics,
+        "summary": entity.summary,
+        "insights": entity.insights,
+        "analyzed_at": entity.analyzed_at,
+    }
+
+
+def map_document_analyses(objs: Union[QuerySet[DocumentAnalysisModel], Iterable[DocumentAnalysisModel]]) -> list[DocumentAnalysisEntity]:
+    """Map multiple DocumentAnalysis models to entities."""
+    return [document_analysis_model_to_entity(o) for o in objs]
+
+
+class DocumentAnalysisMapper:
+    """Mapper for DocumentAnalysis entities and models."""
+
+    @staticmethod
+    def to_entity(model: DocumentAnalysisModel) -> DocumentAnalysisEntity:
+        """Convert Django model to domain entity."""
+        return document_analysis_model_to_entity(model)
+
+    @staticmethod
+    def to_model_data(entity: DocumentAnalysisEntity) -> dict:
+        """Convert domain entity to model data."""
+        return document_analysis_entity_to_model_data(entity)

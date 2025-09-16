@@ -39,6 +39,22 @@ class Document(TimeStampedModel):
     created_by = models.CharField(max_length=150, blank=True, default="")
     external_id = models.CharField(max_length=255, blank=True, default="")
 
+    # PDF processing fields
+    pdf_url = models.URLField(null=True, blank=True)
+    processing_status = models.CharField(
+        max_length=20,
+        default="UPLOADED",
+        choices=[
+            ("UPLOADED", "Uploaded"),
+            ("PROCESSING", "Processing"),
+            ("INDEXED", "Indexed"),
+            ("FAILED", "Failed"),
+        ],
+        db_index=True
+    )
+    checksum = models.CharField(max_length=64, null=True, blank=True, db_index=True)
+    version_id = models.CharField(max_length=36, null=True, blank=True)
+
     # Soft delete fields
     is_deleted = models.BooleanField(default=False, db_index=True)  # type: ignore[arg-type]
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -50,4 +66,29 @@ class Document(TimeStampedModel):
 
     def __str__(self) -> str:
         return str(self.name)
+
+
+class DocumentAnalysis(models.Model):
+    """ORM model for document analysis results."""
+
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="analyses"
+    )
+    missing_topics = models.JSONField(default=list, blank=True)
+    summary = models.TextField(blank=True, default="")
+    insights = models.JSONField(default=list, blank=True)
+    analyzed_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ['-analyzed_at']
+        indexes = [
+            models.Index(fields=['document', '-analyzed_at']),
+        ]
+
+    def __str__(self) -> str:
+        return f"Analysis of {self.document.name} at {self.analyzed_at}"
 

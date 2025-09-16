@@ -4,12 +4,18 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 from api.base import BaseAPIViewSet
 from core.orm.models import Company as CompanyModel
 from core.orm.mappers import CompanyMapper
 from core.domain.entities.company import Company
 from api.serializers import DocumentSerializer
 from api.serializers.zapsign_document import ZapSignDocumentCreateSerializer
+from api.serializers.document_analysis import (
+    DocumentAnalysisSerializer,
+    AnalyzeDocumentRequestSerializer,
+    AnalyzeDocumentResponseSerializer
+)
 from core.app.providers.document import DocumentProvider
 from core.use_cases.document.list_documents import ListDocumentsInput
 from core.use_cases.document.get_document import GetDocumentInput
@@ -23,6 +29,7 @@ from core.services.exceptions import (
     ZapSignValidationError,
     ZapSignAPIError,
 )
+from core.services.analysis.interfaces import AnalysisError
 
 
 def get_company_by_id(company_id: int) -> Optional[Company]:
@@ -259,5 +266,88 @@ class DocumentViewSet(BaseAPIViewSet):
         except Exception as e:
             return self.error_response(
                 message=f"Failed to delete document: {str(e)}",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['post'], url_path='analyze')
+    def analyze(self, request: Request, pk: Optional[str] = None) -> Response:
+        """
+        Analyze a document using AI/heuristic analysis.
+
+        POST /api/documents/{id}/analyze/
+        """
+        if pk is None:
+            return self.error_response(
+                message="Document ID is required",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            document_id = int(pk)
+        except (ValueError, TypeError):
+            return self.error_response(
+                message="Invalid document ID format",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Validate request data
+        request_serializer = AnalyzeDocumentRequestSerializer(data=request.data)
+        if not request_serializer.is_valid():
+            return self.error_response(
+                message="Validation error",
+                data=request_serializer.errors,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Create use case with dependencies
+            from core.repositories.document_repo import DjangoDocumentRepository
+            from core.repositories.document_analysis_repository import DocumentAnalysisRepository
+            from core.services.analysis.ai_service import AIAnalysisService
+            from core.use_cases.analyze_document import AnalyzeDocumentUseCase
+
+            # Use AI service by default
+            analysis_service = AIAnalysisService()
+            print(f"[DEBUG] Using AIAnalysisService for document {document_id}")
+
+            use_case = AnalyzeDocumentUseCase(
+                document_repository=DjangoDocumentRepository(),
+                analysis_repository=DocumentAnalysisRepository(),
+                analysis_service=analysis_service
+            )
+
+            # Execute analysis with force_reanalyze parameter
+            from typing import cast, Dict, Any
+            validated_data = cast(Dict[str, Any], request_serializer.validated_data)
+            force_reanalyze = validated_data.get('force_reanalysis', False)
+            analysis = use_case.execute(document_id, force_reanalyze=force_reanalyze)
+
+            # Serialize response
+            analysis_serializer = DocumentAnalysisSerializer(analysis)
+            response_serializer = AnalyzeDocumentResponseSerializer({
+                'success': True,
+                'message': 'Document analyzed successfully',
+                'analysis': analysis_serializer.data
+            })
+
+            return self.success_response(
+                data=response_serializer.data,
+                message="Document analyzed successfully",
+                status_code=status.HTTP_200_OK
+            )
+
+        except ValueError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        except AnalysisError as e:
+            return self.error_response(
+                message=f"Analysis failed: {str(e)}",
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
+        except Exception as e:
+            return self.error_response(
+                message=f"Failed to analyze document: {str(e)}",
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

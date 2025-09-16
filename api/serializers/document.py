@@ -16,3 +16,9 @@ class DocumentSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     last_updated_at = serializers.DateTimeField(read_only=True)
 
+    # PDF processing fields
+    pdf_url = serializers.URLField(read_only=True, allow_null=True)
+    processing_status = serializers.CharField(max_length=20, read_only=True)
+    checksum = serializers.CharField(max_length=64, read_only=True, allow_null=True)
+    version_id = serializers.CharField(max_length=36, read_only=True, allow_null=True)
+

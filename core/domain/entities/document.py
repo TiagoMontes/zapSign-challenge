@@ -17,6 +17,12 @@ class Document:
     last_updated_at: Optional[datetime] = None
     signer_ids: List[int] = field(default_factory=list)
 
+    # PDF processing fields
+    pdf_url: Optional[str] = None
+    processing_status: str = "UPLOADED"  # UPLOADED, PROCESSING, INDEXED, FAILED
+    checksum: Optional[str] = None
+    version_id: Optional[str] = None
+
     # Soft delete fields
     is_deleted: bool = False
     deleted_at: Optional[datetime] = None
@@ -31,6 +37,22 @@ class Document:
     def can_be_signed(self) -> bool:
         # Simplified rule for M2
         return len(self.signer_ids) > 0 and self.status in ("", "draft", "pending")
+
+    def can_be_analyzed(self) -> bool:
+        """Check if document can be analyzed.
+
+        Business rule: Document can be analyzed if:
+        - It's active (not soft deleted)
+        - Has a name (content to analyze)
+        - Has an ID (persisted in database)
+        - PDF processing is complete (status = INDEXED)
+        """
+        return (
+            self.is_active() and
+            bool(self.name.strip()) and
+            self.id is not None and
+            self.processing_status == "INDEXED"
+        )
 
     def add_signer(self, signer_id: int) -> None:
         if signer_id not in self.signer_ids:
