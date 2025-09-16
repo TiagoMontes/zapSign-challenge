@@ -1,6 +1,7 @@
 from django.test import TestCase
 from core.domain.entities.company import Company
 from core.use_cases.company.get_company import GetCompany, GetCompanyInput
+from core.use_cases.company.exceptions import CompanyNotFoundError
 from tests.fakes.company_repo import FakeCompanyRepository
 
 
@@ -30,7 +31,7 @@ class TestGetCompanyUseCase(TestCase):
         """Test that execute raises error when company is not found."""
         input_data = GetCompanyInput(company_id=999)
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyNotFoundError) as cm:
             self.use_case.execute(input_data)
 
         self.assertIn("Company with ID 999 not found", str(cm.exception))

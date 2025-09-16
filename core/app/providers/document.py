@@ -5,10 +5,12 @@ from functools import lru_cache
 from core.services.zapsign_service import ZapSignService
 from core.repositories.document_repo import DjangoDocumentRepository
 from core.repositories.signer_repo import DjangoSignerRepository
+from core.repositories.company_repo import CompanyRepository
 from core.use_cases.document.create_document_from_upload import CreateDocumentFromUploadUseCase
 from core.use_cases.document.list_documents import ListDocumentsUseCase
 from core.use_cases.document.get_document import GetDocumentUseCase
 from core.use_cases.document.delete_document import SoftDeleteDocumentUseCase
+from core.use_cases.document.delete_document_with_zapsign import DeleteDocumentWithZapSignUseCase
 
 
 class DocumentProvider:
@@ -31,6 +33,12 @@ class DocumentProvider:
     def get_signer_repository() -> DjangoSignerRepository:
         """Get signer repository instance (singleton)."""
         return DjangoSignerRepository()
+
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def get_company_repository() -> CompanyRepository:
+        """Get company repository instance (singleton)."""
+        return CompanyRepository()
 
     @staticmethod
     def get_create_document_use_case() -> CreateDocumentFromUploadUseCase:
@@ -68,6 +76,15 @@ class DocumentProvider:
         )
 
     @staticmethod
+    def get_delete_document_with_zapsign_use_case() -> DeleteDocumentWithZapSignUseCase:
+        """Get configured DeleteDocumentWithZapSignUseCase."""
+        return DeleteDocumentWithZapSignUseCase(
+            document_repository=DocumentProvider.get_document_repository(),
+            company_repository=DocumentProvider.get_company_repository(),
+            zapsign_service=DocumentProvider.get_zapsign_service()
+        )
+
+    @staticmethod
     def clear_cache():
         """
         Clear all cached singleton instances.
@@ -77,3 +94,4 @@ class DocumentProvider:
         DocumentProvider.get_zapsign_service.cache_clear()
         DocumentProvider.get_document_repository.cache_clear()
         DocumentProvider.get_signer_repository.cache_clear()
+        DocumentProvider.get_company_repository.cache_clear()

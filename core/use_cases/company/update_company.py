@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from core.domain.entities.company import Company
 from core.repositories.company_repository_protocol import CompanyRepositoryProtocol
+from .exceptions import CompanyNotFoundError, CompanyAlreadyExistsError, CompanyValidationError
 
 
 @dataclass
@@ -25,11 +26,11 @@ class UpdateCompany:
         # Find existing company
         existing_company = self._repository.find_by_id(input_data.company_id)
         if existing_company is None:
-            raise ValueError(f"Company with ID {input_data.company_id} not found")
+            raise CompanyNotFoundError(f"Company with ID {input_data.company_id} not found")
 
         # Check if the new name conflicts with another company (only if name is being changed)
         if input_data.name != existing_company.name and self._repository.exists_by_name(input_data.name):
-            raise ValueError(f"Company with name '{input_data.name}' already exists")
+            raise CompanyAlreadyExistsError(f"Company with name '{input_data.name}' already exists")
 
         # Create updated company entity
         updated_company = Company(
@@ -44,7 +45,7 @@ class UpdateCompany:
         if not updated_company.is_valid():
             errors = updated_company.get_validation_errors()
             error_messages = list(errors.values())
-            raise ValueError(f"Invalid company data: {', '.join(error_messages)}")
+            raise CompanyValidationError(f"Invalid company data: {', '.join(error_messages)}")
 
         # Save updated company
         return self._repository.save(updated_company)

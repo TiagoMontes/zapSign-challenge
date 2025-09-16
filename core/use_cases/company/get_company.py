@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from core.domain.entities.company import Company
 from core.repositories.company_repository_protocol import CompanyRepositoryProtocol
+from .exceptions import CompanyNotFoundError
 
 
 @dataclass
@@ -20,6 +21,6 @@ class GetCompany:
         company = self._repository.find_by_id(input_data.company_id)
 
         if company is None:
-            raise ValueError(f"Company with ID {input_data.company_id} not found")
+            raise CompanyNotFoundError(f"Company with ID {input_data.company_id} not found")
 
         return company

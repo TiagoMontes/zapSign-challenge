@@ -1,6 +1,7 @@
 from django.test import TestCase
 from core.domain.entities.company import Company
 from core.use_cases.company.delete_company import DeleteCompany, DeleteCompanyInput
+from core.use_cases.company.exceptions import CompanyNotFoundError
 from tests.fakes.company_repo import FakeCompanyRepository
 
 
@@ -29,7 +30,7 @@ class TestDeleteCompanyUseCase(TestCase):
         """Test that execute raises error when company is not found."""
         input_data = DeleteCompanyInput(company_id=999)
 
-        with self.assertRaises(ValueError) as cm:
-            self.use_case.execute(input_data)  # type: ignore[reportArgumentType]  # type: ignore[reportArgumentType]
+        with self.assertRaises(CompanyNotFoundError) as cm:
+            self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company with ID 999 not found", str(cm.exception))

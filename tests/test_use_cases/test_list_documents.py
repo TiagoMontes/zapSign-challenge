@@ -87,6 +87,7 @@ class TestListDocumentsUseCase(TestCase):
 
         saved_doc1 = self.document_repo.save(doc1)
         saved_doc2 = self.document_repo.save(doc2)
+        assert saved_doc2.id is not None, "Saved document should have an ID"
 
         # Soft delete one document
         self.document_repo.soft_delete_by_id(saved_doc2.id, "test_user")
@@ -109,6 +110,7 @@ class TestListDocumentsUseCase(TestCase):
 
         saved_doc1 = self.document_repo.save(doc1)
         saved_doc2 = self.document_repo.save(doc2)
+        assert saved_doc2.id is not None, "Saved document should have an ID"
 
         # Soft delete one document
         self.document_repo.soft_delete_by_id(saved_doc2.id, "test_user")

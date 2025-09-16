@@ -12,7 +12,12 @@ from api.serializers import DocumentSerializer
 from api.serializers.zapsign_document import ZapSignDocumentCreateSerializer
 from core.app.providers.document import DocumentProvider
 from core.use_cases.document.list_documents import ListDocumentsInput
-from core.use_cases.document.get_document import GetDocumentInput, DocumentNotFoundError
+from core.use_cases.document.get_document import GetDocumentInput
+from core.use_cases.document.delete_document_with_zapsign import (
+    DeleteDocumentWithZapSignInput,
+    DocumentNotFoundError,
+    DocumentAlreadyDeletedError
+)
 from core.services.exceptions import (
     ZapSignAuthenticationError,
     ZapSignValidationError,
@@ -174,3 +179,85 @@ class DocumentViewSet(BaseAPIViewSet):
             message="Update operation is not supported for documents",
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED
         )
+
+    def destroy(self, request: Request, pk: Optional[str] = None) -> Response:
+        """
+        Delete a document with ZapSign integration.
+
+        DELETE /api/documents/{id}/?deleted_by=user
+        """
+        if pk is None:
+            return self.error_response(
+                message="Document ID is required",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            document_id = int(pk)
+        except (ValueError, TypeError):
+            return self.error_response(
+                message="Invalid document ID format",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get deleted_by from query parameters (defaulting to 'system')
+        deleted_by = request.GET.get('deleted_by', 'system')
+
+        try:
+            # Execute use case with ZapSign integration
+            use_case = DocumentProvider.get_delete_document_with_zapsign_use_case()
+            input_data = DeleteDocumentWithZapSignInput(
+                document_id=document_id,
+                deleted_by=deleted_by
+            )
+            result = use_case.execute(input_data)
+
+            # Format response
+            response_data = {
+                "document": {
+                    "id": result.document.id,
+                    "name": result.document.name,
+                    "is_deleted": result.document.is_deleted,
+                    "deleted_at": result.document.deleted_at.isoformat() if result.document.deleted_at else None,
+                    "deleted_by": result.document.deleted_by,
+                },
+                "success": result.success,
+                "zapsign_deleted": result.zapsign_deleted
+            }
+
+            return self.success_response(
+                data=response_data,
+                message="Document deleted successfully from both local database and ZapSign",
+                status_code=status.HTTP_200_OK
+            )
+
+        except DocumentNotFoundError:
+            return self.error_response(
+                message="Document not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        except DocumentAlreadyDeletedError:
+            return self.error_response(
+                message="Document is already deleted",
+                status_code=status.HTTP_409_CONFLICT
+            )
+        except ZapSignAuthenticationError:
+            return self.error_response(
+                message="ZapSign authentication failed",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
+        except ZapSignValidationError as e:
+            return self.error_response(
+                message=f"ZapSign validation error: {str(e)}",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        except ZapSignAPIError as e:
+            return self.error_response(
+                message=f"ZapSign API error: {str(e)}",
+                status_code=status.HTTP_502_BAD_GATEWAY
+            )
+        except Exception as e:
+            return self.error_response(
+                message=f"Failed to delete document: {str(e)}",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

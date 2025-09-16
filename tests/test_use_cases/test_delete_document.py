@@ -53,6 +53,7 @@ class TestSoftDeleteDocumentUseCase(TestCase):
             created_by="test-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = DeleteDocumentInput(
             document_id=saved_document.id,
@@ -103,6 +104,7 @@ class TestSoftDeleteDocumentUseCase(TestCase):
             created_by="other-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = DeleteDocumentInput(
             document_id=saved_document.id,
@@ -128,6 +130,7 @@ class TestSoftDeleteDocumentUseCase(TestCase):
             created_by="test-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         # First deletion
         first_input = DeleteDocumentInput(
@@ -165,6 +168,7 @@ class TestSoftDeleteDocumentUseCase(TestCase):
             last_updated_at=original_time
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = DeleteDocumentInput(
             document_id=saved_document.id,
@@ -200,6 +204,9 @@ class TestSoftDeleteDocumentUseCase(TestCase):
         saved_doc1 = self.document_repo.save(doc1)
         saved_doc2 = self.document_repo.save(doc2)
         saved_doc3 = self.document_repo.save(doc3)
+        assert saved_doc1.id is not None, "Saved document should have an ID"
+        assert saved_doc2.id is not None, "Saved document should have an ID"
+        assert saved_doc3.id is not None, "Saved document should have an ID"
 
         input_data = DeleteDocumentInput(
             document_id=saved_doc1.id,

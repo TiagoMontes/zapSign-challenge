@@ -1,6 +1,7 @@
 from django.test import TestCase
 from core.domain.entities.company import Company
 from core.use_cases.company.update_company import UpdateCompany, UpdateCompanyInput
+from core.use_cases.company.exceptions import CompanyNotFoundError, CompanyAlreadyExistsError, CompanyValidationError
 from tests.fakes.company_repo import FakeCompanyRepository
 
 
@@ -47,7 +48,7 @@ class TestUpdateCompanyUseCase(TestCase):
             api_token="updated-token"
         )
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyNotFoundError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company with ID 999 not found", str(cm.exception))
@@ -60,7 +61,7 @@ class TestUpdateCompanyUseCase(TestCase):
 
         input_data = UpdateCompanyInput(company_id=1, name="", api_token="updated-token")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company name is required", str(cm.exception))
@@ -73,7 +74,7 @@ class TestUpdateCompanyUseCase(TestCase):
 
         input_data = UpdateCompanyInput(company_id=1, name="Updated Name", api_token="")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company API token is required", str(cm.exception))
@@ -93,7 +94,7 @@ class TestUpdateCompanyUseCase(TestCase):
             api_token="updated-token"
         )
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyAlreadyExistsError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company with name 'Company Two' already exists", str(cm.exception))

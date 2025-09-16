@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='document',
             name='is_deleted',
-            field=models.BooleanField(db_index=True, default=False),
+            field=models.BooleanField(db_index=True, default=False),  # type: ignore[arg-type]
         ),
         migrations.AlterField(
             model_name='company',

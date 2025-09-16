@@ -51,6 +51,7 @@ class TestGetDocumentUseCase(TestCase):
             created_by="test-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = GetDocumentInput(
             document_id=saved_document.id,
@@ -93,6 +94,7 @@ class TestGetDocumentUseCase(TestCase):
             created_by="other-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = GetDocumentInput(
             document_id=saved_document.id,
@@ -117,6 +119,7 @@ class TestGetDocumentUseCase(TestCase):
             created_by="test-user"
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         # Soft delete the document
         self.document_repo.soft_delete_by_id(saved_document.id, "admin")
@@ -149,6 +152,7 @@ class TestGetDocumentUseCase(TestCase):
             signer_ids=[1, 2, 3]
         )
         saved_document = self.document_repo.save(document)
+        assert saved_document.id is not None, "Saved document should have an ID"
 
         input_data = GetDocumentInput(
             document_id=saved_document.id,

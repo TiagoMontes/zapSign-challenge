@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from core.domain.entities.company import Company
 from core.repositories.company_repository_protocol import CompanyRepositoryProtocol
+from .exceptions import CompanyAlreadyExistsError, CompanyValidationError
 
 
 @dataclass
@@ -23,7 +24,7 @@ class CreateCompany:
         """Execute the create company use case."""
         # Check if company name already exists
         if self._repository.exists_by_name(input_data.name):
-            raise ValueError(f"Company with name '{input_data.name}' already exists")
+            raise CompanyAlreadyExistsError(f"Company with name '{input_data.name}' already exists")
 
         # Create company entity with current timestamp
         now = datetime.now(timezone.utc)
@@ -38,7 +39,7 @@ class CreateCompany:
         if not company.is_valid():
             errors = company.get_validation_errors()
             error_messages = list(errors.values())
-            raise ValueError(f"Invalid company data: {', '.join(error_messages)}")
+            raise CompanyValidationError(f"Invalid company data: {', '.join(error_messages)}")
 
         # Save company
         return self._repository.save(company)

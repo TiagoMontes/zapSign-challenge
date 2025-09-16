@@ -40,6 +40,10 @@ class GetDocumentUseCase:
 
     def execute(self, input_data: GetDocumentInput) -> GetDocumentOutput:
         """Execute the get document use case."""
+        # Validate that company has an ID
+        if input_data.company.id is None:
+            raise DocumentNotFoundError("Company must have an ID to retrieve documents")
+
         # Find document by ID and company to ensure authorization
         document = self._document_repository.find_by_id_and_company(
             document_id=input_data.document_id,

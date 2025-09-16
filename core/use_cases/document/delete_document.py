@@ -51,6 +51,10 @@ class SoftDeleteDocumentUseCase:
 
     def execute(self, input_data: DeleteDocumentInput) -> DeleteDocumentOutput:
         """Execute the soft delete document use case."""
+        # Validate that company has an ID
+        if input_data.company.id is None:
+            raise DocumentNotFoundError("Company must have an ID to delete documents")
+
         # Find document by ID and company to ensure authorization (including soft deleted)
         document = self._document_repository.find_by_id_and_company_including_deleted(
             document_id=input_data.document_id,

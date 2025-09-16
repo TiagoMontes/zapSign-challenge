@@ -11,6 +11,12 @@ from core.use_cases.company.get_company import GetCompany, GetCompanyInput
 from core.use_cases.company.list_companies import ListCompanies
 from core.use_cases.company.update_company import UpdateCompany, UpdateCompanyInput
 from core.use_cases.company.delete_company import DeleteCompany, DeleteCompanyInput
+from core.use_cases.company.exceptions import (
+    CompanyNotFoundError,
+    CompanyAlreadyExistsError,
+    CompanyValidationError,
+    CompanyDeletionError
+)
 
 
 class CompanyViewSet(BaseAPIViewSet):
@@ -69,7 +75,12 @@ class CompanyViewSet(BaseAPIViewSet):
                 message="Company created successfully",
                 status_code=status.HTTP_201_CREATED
             )
-        except ValueError as e:
+        except CompanyAlreadyExistsError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_409_CONFLICT
+            )
+        except CompanyValidationError as e:
             return self.error_response(
                 message=str(e),
                 status_code=status.HTTP_400_BAD_REQUEST
@@ -105,7 +116,7 @@ class CompanyViewSet(BaseAPIViewSet):
                 data=serializer.data,
                 message="Company retrieved successfully"
             )
-        except ValueError as e:
+        except CompanyNotFoundError as e:
             return self.error_response(
                 message=str(e),
                 status_code=status.HTTP_404_NOT_FOUND
@@ -163,7 +174,17 @@ class CompanyViewSet(BaseAPIViewSet):
                 data=response_serializer.data,
                 message="Company updated successfully"
             )
-        except ValueError as e:
+        except CompanyNotFoundError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        except CompanyAlreadyExistsError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_409_CONFLICT
+            )
+        except CompanyValidationError as e:
             return self.error_response(
                 message=str(e),
                 status_code=status.HTTP_400_BAD_REQUEST
@@ -202,7 +223,7 @@ class CompanyViewSet(BaseAPIViewSet):
                 message="Company deleted successfully",
                 status_code=status.HTTP_200_OK
             )
-        except ValueError as e:
+        except CompanyNotFoundError as e:
             return self.error_response(
                 message=str(e),
                 status_code=status.HTTP_404_NOT_FOUND

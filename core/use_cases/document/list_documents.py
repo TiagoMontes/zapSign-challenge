@@ -42,6 +42,10 @@ class ListDocumentsUseCase:
 
     def execute(self, input_data: ListDocumentsInput) -> ListDocumentsOutput:
         """Execute the list documents use case."""
+        # Validate that company has an ID
+        if input_data.company.id is None:
+            raise ValueError("Company must have an ID to list documents")
+
         # Get all documents for the company
         all_documents = self._document_repository.find_by_company(
             company_id=input_data.company.id,

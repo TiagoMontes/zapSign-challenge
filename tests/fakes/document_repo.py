@@ -24,6 +24,10 @@ class FakeDocumentRepository:
         """Find a document by ID."""
         return self._documents.get(document_id)
 
+    def find_by_id_including_deleted(self, document_id: int) -> Optional[Document]:
+        """Find a document by ID, including soft deleted ones."""
+        return self._documents.get(document_id)
+
     def find_by_id_and_company(self, document_id: int, company_id: int) -> Optional[Document]:
         """Find a document by ID that belongs to a specific company."""
         document = self._documents.get(document_id)

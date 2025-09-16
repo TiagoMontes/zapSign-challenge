@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from django.db import transaction
 from core.repositories.company_repository_protocol import CompanyRepositoryProtocol
+from .exceptions import CompanyNotFoundError
 
 
 @dataclass
@@ -20,7 +21,7 @@ class DeleteCompany:
         """Execute the delete company use case."""
         # Check if company exists
         if not self._repository.exists_by_id(input_data.company_id):
-            raise ValueError(f"Company with ID {input_data.company_id} not found")
+            raise CompanyNotFoundError(f"Company with ID {input_data.company_id} not found")
 
         # Delete company
         self._repository.delete_by_id(input_data.company_id)

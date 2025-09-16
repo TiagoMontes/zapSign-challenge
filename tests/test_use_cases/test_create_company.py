@@ -1,6 +1,7 @@
 from django.test import TestCase
 from core.domain.entities.company import Company
 from core.use_cases.company.create_company import CreateCompany, CreateCompanyInput
+from core.use_cases.company.exceptions import CompanyAlreadyExistsError, CompanyValidationError
 from tests.fakes.company_repo import FakeCompanyRepository
 
 
@@ -37,7 +38,7 @@ class TestCreateCompanyUseCase(TestCase):
         """Test that execute raises error when name is empty."""
         input_data = CreateCompanyInput(name="", api_token="test-token")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company name is required", str(cm.exception))
@@ -46,7 +47,7 @@ class TestCreateCompanyUseCase(TestCase):
         """Test that execute raises error when api_token is empty."""
         input_data = CreateCompanyInput(name="Test Company", api_token="")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company API token is required", str(cm.exception))
@@ -56,7 +57,7 @@ class TestCreateCompanyUseCase(TestCase):
         long_name = "A" * 256
         input_data = CreateCompanyInput(name=long_name, api_token="test-token")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company name cannot be longer than 255 characters", str(cm.exception))
@@ -66,7 +67,7 @@ class TestCreateCompanyUseCase(TestCase):
         long_token = "T" * 256
         input_data = CreateCompanyInput(name="Test Company", api_token=long_token)
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyValidationError) as cm:
             self.use_case.execute(input_data)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company API token cannot be longer than 255 characters", str(cm.exception))
@@ -80,7 +81,7 @@ class TestCreateCompanyUseCase(TestCase):
         # Try to create another company with the same name
         duplicate_input = CreateCompanyInput(name="Existing Company", api_token="new-token")
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(CompanyAlreadyExistsError) as cm:
             self.use_case.execute(duplicate_input)  # type: ignore[reportArgumentType]
 
         self.assertIn("Company with name 'Existing Company' already exists", str(cm.exception))

@@ -40,7 +40,7 @@ class Document(TimeStampedModel):
     external_id = models.CharField(max_length=255, blank=True, default="")
 
     # Soft delete fields
-    is_deleted = models.BooleanField(default=False, db_index=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)  # type: ignore[arg-type]
     deleted_at = models.DateTimeField(null=True, blank=True)
     deleted_by = models.CharField(max_length=150, blank=True, default="")
 

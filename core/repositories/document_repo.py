@@ -34,6 +34,14 @@ class DjangoDocumentRepository:
         except ObjectDoesNotExist:
             return None
 
+    def find_by_id_including_deleted(self, document_id: int) -> Optional[Document]:
+        """Find a document by ID, including soft deleted ones."""
+        try:
+            model = DocumentModel.objects.get(id=document_id)
+            return DocumentMapper.to_entity(model)
+        except ObjectDoesNotExist:
+            return None
+
     def find_by_id_and_company(self, document_id: int, company_id: int) -> Optional[Document]:
         """Find a document by ID that belongs to a specific company."""
         try:

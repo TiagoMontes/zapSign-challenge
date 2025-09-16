@@ -1,8 +1,10 @@
 """Integration tests for DocumentViewSet to ensure use case delegation."""
 
 import json
+from typing import cast
 from django.test import TestCase
 from django.urls import reverse
+from django.http import HttpResponse
 from rest_framework.test import APIClient
 from rest_framework import status
 from core.orm.models import Document as DocumentModel, Company as CompanyModel
@@ -43,7 +45,7 @@ class TestDocumentViewSetIntegration(TestCase):
     def test_document_list_should_return_standardized_response_format(self):
         """Test that document list returns standardized response format."""
         url = reverse('document-list')
-        response = self.client.get(url)
+        response = cast(HttpResponse, self.client.get(url))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -65,7 +67,7 @@ class TestDocumentViewSetIntegration(TestCase):
     def test_document_retrieve_should_return_standardized_response_format(self):
         """Test that document retrieve returns standardized response format."""
         url = reverse('document-detail', kwargs={'pk': self.doc1.id})
-        response = self.client.get(url)
+        response = cast(HttpResponse, self.client.get(url))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -88,7 +90,7 @@ class TestDocumentViewSetIntegration(TestCase):
     def test_document_retrieve_should_return_404_for_nonexistent_document(self):
         """Test that document retrieve returns 404 for nonexistent document."""
         url = reverse('document-detail', kwargs={'pk': 99999})
-        response = self.client.get(url)
+        response = cast(HttpResponse, self.client.get(url))
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -105,7 +107,7 @@ class TestDocumentViewSetIntegration(TestCase):
     def test_document_update_should_return_method_not_allowed(self):
         """Test that document update returns method not allowed."""
         url = reverse('document-detail', kwargs={'pk': self.doc1.id})
-        response = self.client.put(url, data={'name': 'Updated Name'})
+        response = cast(HttpResponse, self.client.put(url, data={'name': 'Updated Name'}))
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -122,7 +124,7 @@ class TestDocumentViewSetIntegration(TestCase):
     def test_document_partial_update_should_return_method_not_allowed(self):
         """Test that document partial update returns method not allowed."""
         url = reverse('document-detail', kwargs={'pk': self.doc1.id})
-        response = self.client.patch(url, data={'name': 'Updated Name'})
+        response = cast(HttpResponse, self.client.patch(url, data={'name': 'Updated Name'}))
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
