@@ -6,6 +6,9 @@ from core.services.zapsign_service import ZapSignService
 from core.repositories.document_repo import DjangoDocumentRepository
 from core.repositories.signer_repo import DjangoSignerRepository
 from core.use_cases.document.create_document_from_upload import CreateDocumentFromUploadUseCase
+from core.use_cases.document.list_documents import ListDocumentsUseCase
+from core.use_cases.document.get_document import GetDocumentUseCase
+from core.use_cases.document.delete_document import SoftDeleteDocumentUseCase
 
 
 class DocumentProvider:
@@ -41,6 +44,27 @@ class DocumentProvider:
             zapsign_service=DocumentProvider.get_zapsign_service(),
             document_repository=DocumentProvider.get_document_repository(),
             signer_repository=DocumentProvider.get_signer_repository(),
+        )
+
+    @staticmethod
+    def get_list_documents_use_case() -> ListDocumentsUseCase:
+        """Get configured ListDocumentsUseCase."""
+        return ListDocumentsUseCase(
+            document_repository=DocumentProvider.get_document_repository()
+        )
+
+    @staticmethod
+    def get_get_document_use_case() -> GetDocumentUseCase:
+        """Get configured GetDocumentUseCase."""
+        return GetDocumentUseCase(
+            document_repository=DocumentProvider.get_document_repository()
+        )
+
+    @staticmethod
+    def get_soft_delete_document_use_case() -> SoftDeleteDocumentUseCase:
+        """Get configured SoftDeleteDocumentUseCase."""
+        return SoftDeleteDocumentUseCase(
+            document_repository=DocumentProvider.get_document_repository()
         )
 
     @staticmethod

@@ -39,6 +39,11 @@ class Document(TimeStampedModel):
     created_by = models.CharField(max_length=150, blank=True, default="")
     external_id = models.CharField(max_length=255, blank=True, default="")
 
+    # Soft delete fields
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_by = models.CharField(max_length=150, blank=True, default="")
+
     # Associação: 1 documento -> * signatários (M2)
     signers = models.ManyToManyField(Signer, blank=True, related_name="documents")
     objects = models.Manager()

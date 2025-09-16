@@ -1,13 +1,13 @@
 from rest_framework import serializers
+from .company import CompanySerializer
+from .signer import SignerSerializer
 
 
 class DocumentSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    company = serializers.IntegerField()
+    company = CompanySerializer(read_only=True)
     name = serializers.CharField(max_length=255)
-    signers = serializers.ListField(
-        child=serializers.IntegerField(), required=False, allow_empty=True
-    )
+    signers = SignerSerializer(many=True, read_only=True)
     status = serializers.CharField(max_length=50, required=False, allow_blank=True)
     token = serializers.CharField(max_length=255, read_only=True)
     open_id = serializers.IntegerField(read_only=True, allow_null=True)

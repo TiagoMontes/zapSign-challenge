@@ -53,6 +53,9 @@ def document_model_to_entity(obj: Any) -> DocumentEntity:
         created_at=obj.created_at,
         last_updated_at=obj.last_updated_at,
         signer_ids=signer_ids,
+        is_deleted=getattr(obj, 'is_deleted', False),
+        deleted_at=getattr(obj, 'deleted_at', None),
+        deleted_by=getattr(obj, 'deleted_by', ''),
     )
 
 
@@ -79,6 +82,9 @@ def document_entity_to_model_data(entity: DocumentEntity) -> dict:
         "status": entity.status,
         "token": entity.token,
         "open_id": entity.open_id,
+        "is_deleted": entity.is_deleted,
+        "deleted_at": entity.deleted_at,
+        "deleted_by": entity.deleted_by,
     }
 
 
