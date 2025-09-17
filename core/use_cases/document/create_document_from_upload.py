@@ -97,6 +97,7 @@ class CreateDocumentFromUploadUseCase:
                     token=signer_response.token,
                     status=signer_response.status,
                     external_id=signer_response.external_id,
+                    sign_url=signer_response.sign_url,
                 )
                 signers.append(signer)
 
@@ -111,6 +112,9 @@ class CreateDocumentFromUploadUseCase:
                 )
 
             signers = saved_signers
+
+            # Update document entity with signers for serialization
+            saved_document.signers = saved_signers
 
         # 7. Return result
         return CreateDocumentFromUploadResult(

@@ -12,14 +12,8 @@ class DjangoSignerRepository:
 
     def save(self, signer: Signer) -> Signer:
         """Save a signer and return it with ID."""
-        # Map entity to model
-        model_data = {
-            'name': signer.name,
-            'email': signer.email,
-            'token': signer.token,
-            'status': signer.status,
-            'external_id': signer.external_id,
-        }
+        # Map entity to model using the mapper (includes sign_url)
+        model_data = SignerMapper.to_model_data(signer)
 
         if signer.id:
             # Update existing

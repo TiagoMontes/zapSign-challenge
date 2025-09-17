@@ -11,6 +11,7 @@ class Signer:
     token: str = ""
     status: str = ""
     external_id: str = ""
+    sign_url: str = ""
     created_at: Optional[datetime] = None
     last_updated_at: Optional[datetime] = None
     document_ids: List[int] = field(default_factory=list)

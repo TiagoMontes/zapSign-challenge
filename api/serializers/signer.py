@@ -8,6 +8,7 @@ class SignerSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255, read_only=True)
     status = serializers.CharField(max_length=50, required=False, allow_blank=True)
     external_id = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    sign_url = serializers.URLField(read_only=True, allow_blank=True)
     document_ids = serializers.ListField(
         child=serializers.IntegerField(),
         read_only=True,

@@ -36,6 +36,7 @@ def signer_model_to_entity(obj: Any) -> SignerEntity:
         token=str(obj.token),
         status=str(obj.status),
         external_id=str(obj.external_id),
+        sign_url=str(obj.sign_url),
         created_at=getattr(obj, 'created_at', None),
         last_updated_at=getattr(obj, 'last_updated_at', None),
         document_ids=document_ids,
@@ -84,6 +85,7 @@ def signer_entity_to_model_data(entity: SignerEntity) -> dict:
         "token": entity.token,
         "status": entity.status,
         "external_id": entity.external_id,
+        "sign_url": entity.sign_url,
     }
 
 

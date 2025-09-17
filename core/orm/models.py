@@ -24,6 +24,7 @@ class Signer(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     external_id = models.CharField(max_length=255, blank=True, default="")
+    sign_url = models.URLField(blank=True, default="")
     objects = models.Manager()
 
     def __str__(self) -> str:
