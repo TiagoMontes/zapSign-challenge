@@ -73,7 +73,7 @@ class CreateDocumentFromUploadUseCase:
             status=zapsign_response.status,
             external_id=zapsign_response.external_id,
             created_by=zapsign_response.created_by_email,
-            pdf_url=request.url_pdf,  # Store PDF URL
+            url_pdf=request.url_pdf,  # Store PDF URL
             processing_status="UPLOADED",  # Initial status
             version_id=str(uuid.uuid4()),  # Generate unique version ID
         )
@@ -119,22 +119,22 @@ class CreateDocumentFromUploadUseCase:
             zapsign_response=zapsign_response,
         )
 
-    def _process_pdf_document(self, document: Document, pdf_url: str) -> None:
+    def _process_pdf_document(self, document: Document, url_pdf: str) -> None:
         """Process PDF document: download, extract text, and index.
 
         Args:
             document: Document entity to process
-            pdf_url: URL of the PDF to process
+            url_pdf: URL of the PDF to process
         """
         try:
-            print(f"[DEBUG] Starting PDF processing for document {document.id} from {pdf_url}")
+            print(f"[DEBUG] Starting PDF processing for document {document.id} from {url_pdf}")
 
             # Update status to PROCESSING
             document.processing_status = "PROCESSING"
             self.document_repository.save(document)
 
             # Download and extract text from PDF
-            text_content, checksum = self.pdf_service.download_and_extract_text(pdf_url)
+            text_content, checksum = self.pdf_service.download_and_extract_text(url_pdf)
 
             # Create chunks and embeddings for AI analysis
             self._create_embeddings_for_document(document, text_content)
@@ -190,8 +190,8 @@ class CreateDocumentFromUploadUseCase:
                 }
 
                 # Only add non-None values to metadata
-                if document.pdf_url:
-                    metadata["pdf_url"] = document.pdf_url
+                if document.url_pdf:
+                    metadata["url_pdf"] = document.url_pdf
                 if document.checksum:
                     metadata["checksum"] = document.checksum
 

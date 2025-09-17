@@ -63,7 +63,7 @@ def debug_chroma_contents():
 
         if document_14:
             print(f"\nDocument 14 found: {document_14.name}")
-            print(f"PDF URL: {document_14.pdf_url}")
+            print(f"PDF URL: {document_14.url_pdf}")
             print(f"Processing status: {document_14.processing_status}")
             print(f"Checksum: {document_14.checksum}")
 

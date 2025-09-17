@@ -43,14 +43,14 @@ class DjangoSignerRepository:
     def find_by_id(self, signer_id: int) -> Optional[Signer]:
         """Find a signer by ID."""
         try:
-            model = SignerModel.objects.get(id=signer_id)
+            model = SignerModel.objects.prefetch_related('documents').get(id=signer_id)
             return SignerMapper.to_entity(model)
         except ObjectDoesNotExist:
             return None
 
     def find_all(self) -> List[Signer]:
         """Find all signers."""
-        models = SignerModel.objects.all().order_by('-id')
+        models = SignerModel.objects.prefetch_related('documents').all().order_by('-id')
         return [SignerMapper.to_entity(model) for model in models]
 
     def delete_by_id(self, signer_id: int) -> bool:

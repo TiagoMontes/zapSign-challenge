@@ -45,19 +45,3 @@ class AnalyzeDocumentRequestSerializer(serializers.Serializer):
         help_text = "Request to analyze a document"
 
 
-class AnalyzeDocumentResponseSerializer(serializers.Serializer):
-    """Serializer for document analysis response."""
-
-    success = serializers.BooleanField(
-        help_text="Whether the analysis was successful"
-    )
-    message = serializers.CharField(
-        help_text="Status message"
-    )
-    analysis = DocumentAnalysisSerializer(
-        allow_null=True,
-        help_text="The analysis results if successful"
-    )
-
-    class Meta:
-        help_text = "Response from document analysis operation"

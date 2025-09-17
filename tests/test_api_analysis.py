@@ -17,12 +17,14 @@ class DocumentAnalysisAPITest(TestCase):
             api_token="test_token"
         )
 
-        # Create a document
+        # Create a document that can be analyzed
         self.document = Document.objects.create(
             company=self.company,
             name="Test Contract Agreement",
             status="draft",
-            created_by="test_user@example.com"
+            created_by="test_user@example.com",
+            url_pdf="https://example.com/contract.pdf",
+            processing_status="INDEXED"  # Required for analysis
         )
 
     def test_analyze_document_success(self):
@@ -41,16 +43,13 @@ class DocumentAnalysisAPITest(TestCase):
         self.assertTrue(response_data["success"])
         self.assertIn("data", response_data)
 
-        # Check analysis data structure
+        # Check analysis data structure - analysis data is now directly in "data"
         analysis_data = response_data["data"]
-        self.assertIn("analysis", analysis_data)
-
-        analysis = analysis_data["analysis"]
-        self.assertEqual(analysis["document_id"], self.document.id)
-        self.assertIsNotNone(analysis["summary"])
-        self.assertIsInstance(analysis["missing_topics"], list)
-        self.assertIsInstance(analysis["insights"], list)
-        self.assertIsNotNone(analysis["analyzed_at"])
+        self.assertEqual(analysis_data["document_id"], self.document.id)
+        self.assertIsNotNone(analysis_data["summary"])
+        self.assertIsInstance(analysis_data["missing_topics"], list)
+        self.assertIsInstance(analysis_data["insights"], list)
+        self.assertIsNotNone(analysis_data["analyzed_at"])
 
     def test_analyze_nonexistent_document(self):
         """Test analysis of non-existent document."""
@@ -132,8 +131,8 @@ class DocumentAnalysisAPITest(TestCase):
         self.assertEqual(response2.status_code, 200)
 
         # Both should have the same analysis ID
-        analysis1 = response1.json()["data"]["analysis"]
-        analysis2 = response2.json()["data"]["analysis"]
+        analysis1 = response1.json()["data"]
+        analysis2 = response2.json()["data"]
         self.assertEqual(analysis1["id"], analysis2["id"])
 
 

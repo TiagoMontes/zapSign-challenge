@@ -199,8 +199,8 @@ Seja específico, preciso e baseie-se apenas no que está explicitamente mencion
             AnalysisError: If content extraction fails
         """
         # Check if document has PDF URL for processing
-        if document.pdf_url:
-            print(f"[DEBUG] Document {document.id} has PDF URL: {document.pdf_url}")
+        if document.url_pdf:
+            print(f"[DEBUG] Document {document.id} has PDF URL: {document.url_pdf}")
 
             # Check if already processed and cached in ChromaDB
             document_filter = {"document_id": document.id}
@@ -214,7 +214,7 @@ Seja específico, preciso e baseie-se apenas no que está explicitamente mencion
                 return f"Document: {document.name}\nContent from PDF:\n\n{cached_content}"
 
             # PDF not yet processed, indicate this
-            return f"Document: {document.name}\nStatus: PDF processing required\nURL: {document.pdf_url}"
+            return f"Document: {document.name}\nStatus: PDF processing required\nURL: {document.url_pdf}"
 
         # Fallback for documents without PDF URL
         return f"""Document: {document.name}

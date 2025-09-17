@@ -40,7 +40,7 @@ class Document(TimeStampedModel):
     external_id = models.CharField(max_length=255, blank=True, default="")
 
     # PDF processing fields
-    pdf_url = models.URLField(null=True, blank=True)
+    url_pdf = models.URLField(null=True, blank=True)
     processing_status = models.CharField(
         max_length=20,
         default="UPLOADED",

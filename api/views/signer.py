@@ -4,17 +4,21 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from api.base import BaseAPIViewSet
-from core.orm.models import Signer
+from core.repositories.signer_repo import DjangoSignerRepository
 from api.serializers import SignerSerializer
 
 
 class SignerViewSet(BaseAPIViewSet):
     permission_classes = [AllowAny]
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.signer_repo = DjangoSignerRepository()
+
     def list(self, request: Request) -> Response:
         """List all signers."""
         try:
-            signers = Signer.objects.all().order_by("-id")
+            signers = self.signer_repo.find_all()
             serializer = SignerSerializer(signers, many=True)
             return self.success_response(
                 data=serializer.data,
@@ -43,16 +47,17 @@ class SignerViewSet(BaseAPIViewSet):
             )
 
         try:
-            signer = Signer.objects.get(id=signer_id)
+            signer = self.signer_repo.find_by_id(signer_id)
+            if signer is None:
+                return self.error_response(
+                    message=f"Signer with ID {signer_id} not found",
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
+
             serializer = SignerSerializer(signer)
             return self.success_response(
                 data=serializer.data,
                 message="Signer retrieved successfully"
-            )
-        except Signer.DoesNotExist:
-            return self.error_response(
-                message=f"Signer with ID {signer_id} not found",
-                status_code=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
             return self.error_response(

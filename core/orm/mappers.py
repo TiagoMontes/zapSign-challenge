@@ -28,6 +28,7 @@ def company_model_to_entity(obj: Any) -> CompanyEntity:
 
 
 def signer_model_to_entity(obj: Any) -> SignerEntity:
+    document_ids = list(obj.documents.values_list("id", flat=True)) if obj.id else []
     return SignerEntity(
         id=obj.id,
         name=str(obj.name),
@@ -37,11 +38,17 @@ def signer_model_to_entity(obj: Any) -> SignerEntity:
         external_id=str(obj.external_id),
         created_at=getattr(obj, 'created_at', None),
         last_updated_at=getattr(obj, 'last_updated_at', None),
+        document_ids=document_ids,
     )
 
 
 def document_model_to_entity(obj: Any) -> DocumentEntity:
     signer_ids = list(obj.signers.values_list("id", flat=True)) if obj.id else []
+    # Load signer entities if document has signers
+    signers = []
+    if obj.id:
+        signers = [signer_model_to_entity(signer_model) for signer_model in obj.signers.all()]
+
     return DocumentEntity(
         id=obj.id,
         company_id=obj.company_id,
@@ -54,11 +61,12 @@ def document_model_to_entity(obj: Any) -> DocumentEntity:
         created_at=obj.created_at,
         last_updated_at=obj.last_updated_at,
         signer_ids=signer_ids,
+        signers=signers,
         is_deleted=getattr(obj, 'is_deleted', False),
         deleted_at=getattr(obj, 'deleted_at', None),
         deleted_by=getattr(obj, 'deleted_by', ''),
         # PDF processing fields
-        pdf_url=getattr(obj, 'pdf_url', None),
+        url_pdf=getattr(obj, 'url_pdf', None),
         processing_status=getattr(obj, 'processing_status', 'UPLOADED'),
         checksum=getattr(obj, 'checksum', None),
         version_id=getattr(obj, 'version_id', None),
@@ -92,7 +100,7 @@ def document_entity_to_model_data(entity: DocumentEntity) -> dict:
         "deleted_at": entity.deleted_at,
         "deleted_by": entity.deleted_by,
         # PDF processing fields
-        "pdf_url": entity.pdf_url,
+        "url_pdf": entity.url_pdf,
         "processing_status": entity.processing_status,
         "checksum": entity.checksum,
         "version_id": entity.version_id,

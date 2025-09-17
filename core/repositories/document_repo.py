@@ -29,7 +29,7 @@ class DjangoDocumentRepository:
     def find_by_id(self, document_id: int) -> Optional[Document]:
         """Find a document by ID."""
         try:
-            model = DocumentModel.objects.get(id=document_id)
+            model = DocumentModel.objects.prefetch_related('signers').get(id=document_id)
             return DocumentMapper.to_entity(model)
         except ObjectDoesNotExist:
             return None
@@ -37,7 +37,7 @@ class DjangoDocumentRepository:
     def find_by_id_including_deleted(self, document_id: int) -> Optional[Document]:
         """Find a document by ID, including soft deleted ones."""
         try:
-            model = DocumentModel.objects.get(id=document_id)
+            model = DocumentModel.objects.prefetch_related('signers').get(id=document_id)
             return DocumentMapper.to_entity(model)
         except ObjectDoesNotExist:
             return None
@@ -45,7 +45,7 @@ class DjangoDocumentRepository:
     def find_by_id_and_company(self, document_id: int, company_id: int) -> Optional[Document]:
         """Find a document by ID that belongs to a specific company."""
         try:
-            model = DocumentModel.objects.get(
+            model = DocumentModel.objects.prefetch_related('signers').get(
                 id=document_id,
                 company_id=company_id,
                 is_deleted=False
@@ -57,7 +57,7 @@ class DjangoDocumentRepository:
     def find_by_id_and_company_including_deleted(self, document_id: int, company_id: int) -> Optional[Document]:
         """Find a document by ID that belongs to a specific company, including soft deleted ones."""
         try:
-            model = DocumentModel.objects.get(
+            model = DocumentModel.objects.prefetch_related('signers').get(
                 id=document_id,
                 company_id=company_id
             )
@@ -68,17 +68,17 @@ class DjangoDocumentRepository:
     def find_by_company(self, company_id: int, include_deleted: bool = False) -> List[Document]:
         """Find all documents belonging to a specific company."""
         if include_deleted:
-            models = DocumentModel.objects.filter(company_id=company_id).order_by('-id')
+            models = DocumentModel.objects.filter(company_id=company_id).prefetch_related('signers').order_by('-id')
         else:
             models = DocumentModel.objects.filter(
                 company_id=company_id,
                 is_deleted=False
-            ).order_by('-id')
+            ).prefetch_related('signers').order_by('-id')
         return [DocumentMapper.to_entity(model) for model in models]
 
     def find_all(self) -> List[Document]:
         """Find all documents (excluding soft deleted)."""
-        models = DocumentModel.objects.filter(is_deleted=False).order_by('-id')
+        models = DocumentModel.objects.filter(is_deleted=False).prefetch_related('signers').order_by('-id')
         return [DocumentMapper.to_entity(model) for model in models]
 
     def delete_by_id(self, document_id: int) -> bool:

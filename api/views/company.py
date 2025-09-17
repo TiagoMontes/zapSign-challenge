@@ -5,9 +5,12 @@ from rest_framework.request import Request
 from rest_framework.permissions import AllowAny
 from api.base import BaseAPIViewSet
 from api.serializers import CompanySerializer
+from api.serializers.company import CompanyWithDocumentsSerializer
 from core.repositories.company_repo import CompanyRepository
+from core.repositories.document_repo import DjangoDocumentRepository
 from core.use_cases.company.create_company import CreateCompany, CreateCompanyInput
 from core.use_cases.company.get_company import GetCompany, GetCompanyInput
+from core.use_cases.company.get_company_with_documents import GetCompanyWithDocuments, GetCompanyWithDocumentsInput
 from core.use_cases.company.list_companies import ListCompanies
 from core.use_cases.company.update_company import UpdateCompany, UpdateCompanyInput
 from core.use_cases.company.delete_company import DeleteCompany, DeleteCompanyInput
@@ -25,6 +28,7 @@ class CompanyViewSet(BaseAPIViewSet):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._repository = CompanyRepository()
+        self._document_repository = DjangoDocumentRepository()
 
     def list(self, request: Request) -> Response:
         """List all companies."""
@@ -92,7 +96,7 @@ class CompanyViewSet(BaseAPIViewSet):
             )
 
     def retrieve(self, request: Request, pk: Optional[str] = None) -> Response:
-        """Get a specific company by ID."""
+        """Get a specific company by ID with its documents."""
         if pk is None:
             return self.error_response(
                 message="Company ID is required",
@@ -108,10 +112,10 @@ class CompanyViewSet(BaseAPIViewSet):
             )
 
         try:
-            use_case = GetCompany(self._repository)
-            input_data = GetCompanyInput(company_id=company_id)
-            company = use_case.execute(input_data)  # type: ignore[reportArgumentType]
-            serializer = CompanySerializer(company)
+            use_case = GetCompanyWithDocuments(self._repository, self._document_repository)
+            input_data = GetCompanyWithDocumentsInput(company_id=company_id)
+            company_with_documents = use_case.execute(input_data)  # type: ignore[reportArgumentType]
+            serializer = CompanyWithDocumentsSerializer(company_with_documents)
             return self.success_response(
                 data=serializer.data,
                 message="Company retrieved successfully"

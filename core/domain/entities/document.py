@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .signer import Signer
 
 
 @dataclass
@@ -16,9 +19,10 @@ class Document:
     created_at: Optional[datetime] = None
     last_updated_at: Optional[datetime] = None
     signer_ids: List[int] = field(default_factory=list)
+    signers: List['Signer'] = field(default_factory=list)
 
     # PDF processing fields
-    pdf_url: Optional[str] = None
+    url_pdf: Optional[str] = None
     processing_status: str = "UPLOADED"  # UPLOADED, PROCESSING, INDEXED, FAILED
     checksum: Optional[str] = None
     version_id: Optional[str] = None
@@ -36,7 +40,9 @@ class Document:
 
     def can_be_signed(self) -> bool:
         # Simplified rule for M2
-        return len(self.signer_ids) > 0 and self.status in ("", "draft", "pending")
+        # Check both signers list and signer_ids for backward compatibility
+        has_signers = len(self.signers) > 0 or len(self.signer_ids) > 0
+        return has_signers and self.status in ("", "draft", "pending")
 
     def can_be_analyzed(self) -> bool:
         """Check if document can be analyzed.

@@ -3,8 +3,7 @@ from .document import DocumentSerializer
 from .signer import SignerSerializer
 from .document_analysis import (
     DocumentAnalysisSerializer,
-    AnalyzeDocumentRequestSerializer,
-    AnalyzeDocumentResponseSerializer
+    AnalyzeDocumentRequestSerializer
 )
 
 __all__ = [
@@ -13,5 +12,4 @@ __all__ = [
     "SignerSerializer",
     "DocumentAnalysisSerializer",
     "AnalyzeDocumentRequestSerializer",
-    "AnalyzeDocumentResponseSerializer",
 ]

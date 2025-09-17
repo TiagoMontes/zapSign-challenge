@@ -3,6 +3,7 @@
 import unittest
 from datetime import datetime, timezone
 from core.domain.entities.document import Document
+from core.domain.entities.signer import Signer
 
 
 class TestDocument(unittest.TestCase):
@@ -102,3 +103,63 @@ class TestDocument(unittest.TestCase):
         # Don't add duplicate signers
         doc.add_signer(100)
         self.assertEqual(len(doc.signer_ids), 2)
+
+    def test_document_should_include_signers_list_when_loaded_from_repository(self) -> None:
+        """Test that Document should have a signers field containing Signer entities."""
+        # Create some signer entities
+        signer1 = Signer(
+            id=1,
+            name="João Silva",
+            email="joao.silva@example.com",
+            token="signer_token_abc123",
+            status="pending",
+            external_id="ext_signer_001",
+            created_at=datetime.now(timezone.utc),
+            last_updated_at=datetime.now(timezone.utc)
+        )
+        signer2 = Signer(
+            id=2,
+            name="Maria Santos",
+            email="maria.santos@example.com",
+            token="signer_token_def456",
+            status="signed",
+            external_id="ext_signer_002",
+            created_at=datetime.now(timezone.utc),
+            last_updated_at=datetime.now(timezone.utc)
+        )
+
+        # Create document with signers list
+        doc = Document(
+            company_id=1,
+            name="Test Document",
+            signers=[signer1, signer2],
+            signer_ids=[1, 2]  # Keep backward compatibility
+        )
+
+        # Document should have signers list
+        self.assertEqual(len(doc.signers), 2)
+        self.assertIsInstance(doc.signers[0], Signer)
+        self.assertIsInstance(doc.signers[1], Signer)
+        self.assertEqual(doc.signers[0].name, "João Silva")
+        self.assertEqual(doc.signers[1].name, "Maria Santos")
+
+    def test_document_should_default_to_empty_signers_list_when_created(self) -> None:
+        """Test that Document defaults to empty signers list."""
+        doc = Document(company_id=1, name="Test Document")
+
+        self.assertEqual(len(doc.signers), 0)
+        self.assertIsInstance(doc.signers, list)
+
+    def test_document_can_be_signed_should_check_signers_list_not_empty(self) -> None:
+        """Test that can_be_signed() checks signers list instead of just signer_ids."""
+        doc = Document(company_id=1, name="Test Document")
+
+        # Initially no signers
+        self.assertFalse(doc.can_be_signed())
+
+        # Add signer entity to signers list
+        signer = Signer(id=1, name="Test Signer", email="test@example.com")
+        doc.signers.append(signer)
+
+        # Now it can be signed
+        self.assertTrue(doc.can_be_signed())

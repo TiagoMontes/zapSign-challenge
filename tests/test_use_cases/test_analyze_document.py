@@ -32,7 +32,8 @@ class TestAnalyzeDocumentUseCase(unittest.TestCase):
             company_id=1,
             name="Test Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
         analysis = DocumentAnalysis(
@@ -116,7 +117,8 @@ class TestAnalyzeDocumentUseCase(unittest.TestCase):
             company_id=1,
             name="Test Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
         existing_analysis = DocumentAnalysis(
@@ -147,7 +149,8 @@ class TestAnalyzeDocumentUseCase(unittest.TestCase):
             company_id=1,
             name="Test Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
         self.document_repository.find_by_id.return_value = document
@@ -168,7 +171,8 @@ class TestAnalyzeDocumentUseCase(unittest.TestCase):
             company_id=1,
             name="Test Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
         # Analysis with no meaningful content
@@ -198,7 +202,8 @@ class TestAnalyzeDocumentUseCase(unittest.TestCase):
             company_id=1,
             name="Test Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
         self.document_repository.find_by_id.return_value = document

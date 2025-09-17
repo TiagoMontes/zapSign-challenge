@@ -13,8 +13,7 @@ from api.serializers import DocumentSerializer
 from api.serializers.zapsign_document import ZapSignDocumentCreateSerializer
 from api.serializers.document_analysis import (
     DocumentAnalysisSerializer,
-    AnalyzeDocumentRequestSerializer,
-    AnalyzeDocumentResponseSerializer
+    AnalyzeDocumentRequestSerializer
 )
 from core.app.providers.document import DocumentProvider
 from core.use_cases.document.list_documents import ListDocumentsInput
@@ -322,16 +321,11 @@ class DocumentViewSet(BaseAPIViewSet):
             force_reanalyze = validated_data.get('force_reanalysis', False)
             analysis = use_case.execute(document_id, force_reanalyze=force_reanalyze)
 
-            # Serialize response
+            # Serialize response - pass analysis data directly to success_response
             analysis_serializer = DocumentAnalysisSerializer(analysis)
-            response_serializer = AnalyzeDocumentResponseSerializer({
-                'success': True,
-                'message': 'Document analyzed successfully',
-                'analysis': analysis_serializer.data
-            })
 
             return self.success_response(
-                data=response_serializer.data,
+                data=analysis_serializer.data,
                 message="Document analyzed successfully",
                 status_code=status.HTTP_200_OK
             )

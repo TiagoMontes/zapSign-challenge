@@ -23,7 +23,8 @@ class DocumentAnalysisIntegrationTest(TestCase):
             company=self.company,
             name="Test Contract Agreement",
             status="draft",
-            created_by="test_user@example.com"
+            created_by="test_user@example.com",
+            processing_status="INDEXED"  # Required for analysis
         )
 
     def test_complete_analysis_workflow(self):

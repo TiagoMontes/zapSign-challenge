@@ -24,11 +24,16 @@ class TestCreateDocumentFromUploadUseCase(TestCase):
         self.mock_zapsign_service = Mock()
         self.mock_document_repo = Mock()
         self.mock_signer_repo = Mock()
+        self.mock_pdf_service = Mock()
+
+        # Mock PDF service to return expected tuple
+        self.mock_pdf_service.download_and_extract_text.return_value = ("extracted text content", "abc123")
 
         self.use_case = CreateDocumentFromUploadUseCase(
             zapsign_service=self.mock_zapsign_service,
             document_repository=self.mock_document_repo,
             signer_repository=self.mock_signer_repo,
+            pdf_service=self.mock_pdf_service,
         )
 
         self.company = Company(id=1, name="Test Company", api_token="company-api-token")
@@ -112,9 +117,10 @@ class TestCreateDocumentFromUploadUseCase(TestCase):
             api_token="company-api-token", request=request
         )
 
-        # Verify document was saved
-        self.mock_document_repo.save.assert_called_once()
-        saved_doc = self.mock_document_repo.save.call_args[0][0]
+        # Verify document was saved (multiple times due to PDF processing)
+        self.assertTrue(self.mock_document_repo.save.called)
+        # Get the first call (initial document save)
+        saved_doc = self.mock_document_repo.save.call_args_list[0][0][0]
         self.assertEqual(saved_doc.company_id, self.company.id)
         self.assertEqual(saved_doc.name, "Test Document")
         self.assertEqual(saved_doc.token, "doc-token-123")
@@ -181,7 +187,7 @@ class TestCreateDocumentFromUploadUseCase(TestCase):
 
         # Assert
         self.mock_zapsign_service.create_document.assert_called_once()
-        self.mock_document_repo.save.assert_called_once()
+        self.assertTrue(self.mock_document_repo.save.called)  # Called multiple times due to PDF processing
         self.mock_signer_repo.save_bulk.assert_not_called()  # No signers to save
         self.mock_document_repo.add_signers.assert_not_called()  # No signers to associate
 

@@ -8,6 +8,11 @@ class SignerSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255, read_only=True)
     status = serializers.CharField(max_length=50, required=False, allow_blank=True)
     external_id = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    document_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        read_only=True,
+        help_text="List of document IDs that this signer is associated with"
+    )
     created_at = serializers.DateTimeField(read_only=True)
     last_updated_at = serializers.DateTimeField(read_only=True)
 

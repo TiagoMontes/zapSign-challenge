@@ -19,7 +19,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Service Agreement Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
 
         analysis = self.service.analyze_document(document)
@@ -39,7 +40,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Project Proposal 2024",
             status="pending",
-            created_by="manager@example.com"
+            created_by="manager@example.com",
+            processing_status="INDEXED"
         )
 
         analysis = self.service.analyze_document(document)
@@ -59,7 +61,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Terms and Conditions",
             status="",
-            created_by="legal@example.com"
+            created_by="legal@example.com",
+            processing_status="INDEXED"
         )
 
         analysis = self.service.analyze_document(document)
@@ -77,7 +80,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Meeting Notes",
             status="active",
-            created_by="admin@example.com"
+            created_by="admin@example.com",
+            processing_status="INDEXED"
         )
 
         analysis = self.service.analyze_document(document)
@@ -94,7 +98,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Valid Document",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
 
         # Should not raise exception
@@ -107,7 +112,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Invalid Document",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -121,7 +127,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Deleted Document",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         document.soft_delete("admin")
 
@@ -137,7 +144,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Service Contract Agreement",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(contract_doc)
         doc_type = self.service._classify_document_type(contract_doc, content)
@@ -149,7 +157,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Project Proposal",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(proposal_doc)
         doc_type = self.service._classify_document_type(proposal_doc, content)
@@ -161,7 +170,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Privacy Policy",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(legal_doc)
         doc_type = self.service._classify_document_type(legal_doc, content)
@@ -173,7 +183,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Meeting Notes",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(general_doc)
         doc_type = self.service._classify_document_type(general_doc, content)
@@ -187,7 +198,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Draft Contract",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(draft_doc)
         insights = self.service._generate_insights(draft_doc, "contract", content)
@@ -199,7 +211,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Pending Contract",
             status="pending",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
         content = self.service._extract_content(pending_doc)
         insights = self.service._generate_insights(pending_doc, "contract", content)
@@ -212,7 +225,8 @@ class TestHeuristicAnalysisService(unittest.TestCase):
             company_id=1,
             name="Test Document",
             status="draft",
-            created_by="user@example.com"
+            created_by="user@example.com",
+            processing_status="INDEXED"
         )
 
         analysis = self.service.analyze_document(document)
