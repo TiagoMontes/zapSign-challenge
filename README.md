@@ -55,11 +55,14 @@ Este projeto implementa um sistema completo de gerenciamento de documentos com:
 - **Classificação de Conteúdo**: Categorização automática de documentos
 - **Geração de Insights**: Resumos de documentos gerados por IA
 
-### 🔐 Assinaturas Eletrônicas
+#### 🔐 Assinaturas Eletrônicas
 - **Integração ZapSign**: Integração completa de workflow
 - **Solicitações de Assinatura**: Notificações automatizadas aos signatários
 - **Monitoramento de Status**: Rastreamento de assinatura em tempo real
 - **Finalização de Documentos**: Manuseio automático de conclusão
+
+### 📝 Recursos de Teste
+- **PDFs de Teste**: Documentos de exemplo disponíveis em `pdfTest.md` para testes e desenvolvimento
 
 ## 📊 Documentação da API
 
