@@ -12,6 +12,7 @@ from core.use_cases.document.list_documents import ListDocumentsUseCase
 from core.use_cases.document.get_document import GetDocumentUseCase
 from core.use_cases.document.delete_document import SoftDeleteDocumentUseCase
 from core.use_cases.document.delete_document_with_zapsign import DeleteDocumentWithZapSignUseCase
+from core.use_cases.signer.add_signer_to_document import AddSignerToDocumentUseCase
 
 
 class DocumentProvider:
@@ -88,6 +89,16 @@ class DocumentProvider:
         """Get configured DeleteDocumentWithZapSignUseCase."""
         return DeleteDocumentWithZapSignUseCase(
             document_repository=DocumentProvider.get_document_repository(),
+            company_repository=DocumentProvider.get_company_repository(),
+            zapsign_service=DocumentProvider.get_zapsign_service()
+        )
+
+    @staticmethod
+    def get_add_signer_to_document_use_case() -> AddSignerToDocumentUseCase:
+        """Get configured AddSignerToDocumentUseCase."""
+        return AddSignerToDocumentUseCase(
+            document_repository=DocumentProvider.get_document_repository(),
+            signer_repository=DocumentProvider.get_signer_repository(),
             company_repository=DocumentProvider.get_company_repository(),
             zapsign_service=DocumentProvider.get_zapsign_service()
         )

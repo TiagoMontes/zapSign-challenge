@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
 
@@ -9,9 +9,9 @@ class DocumentAnalysis:
 
     id: Optional[int] = None
     document_id: int = 0
-    missing_topics: List[str] = None
+    missing_topics: List[str] = field(default_factory=list)
     summary: str = ""
-    insights: List[str] = None
+    insights: List[str] = field(default_factory=list)
     analyzed_at: Optional[datetime] = None
 
     def __post_init__(self) -> None:

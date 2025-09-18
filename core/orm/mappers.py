@@ -29,6 +29,11 @@ def company_model_to_entity(obj: Any) -> CompanyEntity:
 
 def signer_model_to_entity(obj: Any) -> SignerEntity:
     document_ids = list(obj.documents.values_list("id", flat=True)) if obj.id else []
+    # Get company_id from the first associated document
+    company_id = None
+    if obj.id and obj.documents.exists():
+        company_id = obj.documents.first().company_id
+
     return SignerEntity(
         id=obj.id,
         name=str(obj.name),
@@ -37,9 +42,13 @@ def signer_model_to_entity(obj: Any) -> SignerEntity:
         status=str(obj.status),
         external_id=str(obj.external_id),
         sign_url=str(obj.sign_url),
+        company_id=company_id,
         created_at=getattr(obj, 'created_at', None),
         last_updated_at=getattr(obj, 'last_updated_at', None),
         document_ids=document_ids,
+        times_viewed=getattr(obj, 'times_viewed', None),
+        last_view_at=getattr(obj, 'last_view_at', None),
+        signed_at=getattr(obj, 'signed_at', None),
     )
 
 
@@ -86,6 +95,9 @@ def signer_entity_to_model_data(entity: SignerEntity) -> dict:
         "status": entity.status,
         "external_id": entity.external_id,
         "sign_url": entity.sign_url,
+        "times_viewed": entity.times_viewed,
+        "last_view_at": entity.last_view_at,
+        "signed_at": entity.signed_at,
     }
 
 

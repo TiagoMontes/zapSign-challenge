@@ -18,13 +18,17 @@ class Company(TimeStampedModel):
         return str(self.name)
 
 
-class Signer(models.Model):
+class Signer(TimeStampedModel):
     token = models.CharField(max_length=255, blank=True, default="")
     status = models.CharField(max_length=50, blank=True, default="")
     name = models.CharField(max_length=255)
     email = models.EmailField()
     external_id = models.CharField(max_length=255, blank=True, default="")
     sign_url = models.URLField(blank=True, default="")
+    # ZapSign sync fields
+    times_viewed = models.IntegerField(null=True, blank=True)
+    last_view_at = models.DateTimeField(null=True, blank=True)
+    signed_at = models.DateTimeField(null=True, blank=True)
     objects = models.Manager()
 
     def __str__(self) -> str:

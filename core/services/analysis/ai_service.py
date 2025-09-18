@@ -3,12 +3,12 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from pathlib import Path
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.schema import Document as LangChainDocument
-from langchain.prompts import PromptTemplate
+from langchain.text_splitter import RecursiveCharacterTextSplitter  # type: ignore[import-untyped]
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI  # type: ignore[import-untyped]
+from langchain_community.vectorstores import Chroma  # type: ignore[import-untyped]
+from langchain.chains import RetrievalQA  # type: ignore[import-untyped]
+from langchain.schema import Document as LangChainDocument  # type: ignore[import-untyped]
+from langchain.prompts import PromptTemplate  # type: ignore[import-untyped]
 
 from core.domain.entities.document import Document
 from core.domain.entities.document_analysis import DocumentAnalysis
@@ -169,6 +169,9 @@ Seja específico, preciso e baseie-se apenas no que está explicitamente mencion
             self._ensure_document_indexed(document, content)
 
             # Perform RAG-based analysis using persistent vectorstore
+            if document.id is None:
+                raise AnalysisError("Document must have an ID for AI analysis")
+
             analysis_result = self._perform_rag_analysis(
                 document.id, document.name
             )
@@ -333,6 +336,8 @@ Para análise completa, é necessário fornecer um PDF via url_pdf durante a cri
         """
         try:
             # Remove existing chunks
+            if document.id is None:
+                return False
             self._remove_document_from_index(document.id)
 
             # Extract fresh content and reindex

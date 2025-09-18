@@ -171,7 +171,7 @@ class CreateDocumentFromUploadUseCase:
         """
         try:
             from core.services.analysis.ai_service import AIAnalysisService
-            from langchain.schema import Document as LangChainDocument
+            from langchain.schema import Document as LangChainDocument  # type: ignore[import-untyped]
 
             print(f"[DEBUG] Creating embeddings for document {document.id} with {len(text_content)} characters")
 

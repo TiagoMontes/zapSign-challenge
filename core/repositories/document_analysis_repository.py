@@ -88,7 +88,7 @@ class DocumentAnalysisRepository:
                     setattr(model, key, value)
                 model.save()
                 return DocumentAnalysisMapper.to_entity(model)
-            except DocumentAnalysisModel.DoesNotExist:
+            except DocumentAnalysisModel.DoesNotExist:  # type: ignore[attr-defined]
                 raise ValueError(f"DocumentAnalysis with id {analysis.id} not found")
         else:
             # Create new analysis
@@ -111,7 +111,7 @@ class DocumentAnalysisRepository:
         try:
             model = DocumentAnalysisModel.objects.get(id=analysis_id)
             return DocumentAnalysisMapper.to_entity(model)
-        except DocumentAnalysisModel.DoesNotExist:
+        except DocumentAnalysisModel.DoesNotExist:  # type: ignore[attr-defined]
             return None
 
     def get_by_document_id(self, document_id: int) -> Optional[DocumentAnalysis]:
@@ -170,5 +170,5 @@ class DocumentAnalysisRepository:
             model = DocumentAnalysisModel.objects.get(id=analysis_id)
             model.delete()
             return True
-        except DocumentAnalysisModel.DoesNotExist:
+        except DocumentAnalysisModel.DoesNotExist:  # type: ignore[attr-defined]
             return False

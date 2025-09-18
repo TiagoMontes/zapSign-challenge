@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.request import Request
@@ -343,5 +343,104 @@ class DocumentViewSet(BaseAPIViewSet):
         except Exception as e:
             return self.error_response(
                 message=f"Failed to analyze document: {str(e)}",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['post'], url_path='add-signer')
+    def add_signer(self, request: Request, pk: Optional[str] = None) -> Response:
+        """
+        Add a new signer to an existing document via ZapSign API.
+
+        POST /api/documents/{document_id}/add-signer/
+        """
+        if pk is None:
+            return self.error_response(
+                message="Document ID is required",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            document_id = int(pk)
+        except (ValueError, TypeError):
+            return self.error_response(
+                message="Invalid document ID format",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Import exceptions and types at module level to fix scope issues
+        from core.use_cases.signer.add_signer_to_document import (
+            AddSignerToDocumentInput,
+            AddSignerToDocumentOutput,
+            DocumentNotFoundError,
+            DocumentAddSignerError,
+            CompanyNotFoundError,
+        )
+
+        try:
+            # Get use case from provider
+            add_signer_use_case = DocumentProvider.get_add_signer_to_document_use_case()
+
+            # Execute addition
+            # Convert request data safely
+            signer_data: Dict[str, Any] = {}
+            if hasattr(request, 'data') and request.data is not None:
+                # Handle different types of request.data
+                if isinstance(request.data, dict):
+                    signer_data = request.data
+                elif hasattr(request.data, 'items') and callable(getattr(request.data, 'items')):
+                    for key, value in request.data.items():  # type: ignore[attr-defined]
+                        signer_data[str(key)] = value
+                else:
+                    # Fallback for other data types
+                    signer_data = {}
+
+            input_data = AddSignerToDocumentInput(
+                document_id=document_id,
+                signer_data=signer_data
+            )
+            result: AddSignerToDocumentOutput = add_signer_use_case.execute(input_data)  # type: ignore[assignment]
+
+            # Serialize and return new signer
+            from api.serializers.signer import SignerSerializer
+            serializer = SignerSerializer(result.signer)
+            return self.success_response(
+                data=serializer.data,
+                message="Signer added to document successfully",
+                status_code=status.HTTP_201_CREATED
+            )
+
+        except DocumentNotFoundError:
+            return self.error_response(
+                message=f"Document with ID {document_id} not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        except DocumentAddSignerError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        except CompanyNotFoundError as e:
+            return self.error_response(
+                message=str(e),
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        except ZapSignAuthenticationError as e:
+            return self.error_response(
+                message=f"ZapSign authentication failed: {str(e)}",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
+        except ZapSignValidationError as e:
+            return self.error_response(
+                message=f"ZapSign validation error: {str(e)}",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        except ZapSignAPIError as e:
+            return self.error_response(
+                message=f"ZapSign API error: {str(e)}",
+                status_code=status.HTTP_502_BAD_GATEWAY
+            )
+        except Exception as e:
+            return self.error_response(
+                message=f"Failed to add signer to document: {str(e)}",
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

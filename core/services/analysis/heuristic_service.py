@@ -4,7 +4,7 @@ from typing import List, Set
 
 from core.domain.entities.document import Document
 from core.domain.entities.document_analysis import DocumentAnalysis
-from .interfaces import BaseAnalysisService
+from .interfaces import BaseAnalysisService, AnalysisError
 
 
 class HeuristicAnalysisService(BaseAnalysisService):
@@ -83,6 +83,9 @@ class HeuristicAnalysisService(BaseAnalysisService):
 
         # Generate insights
         insights = self._generate_insights(document, doc_type, content)
+
+        if document.id is None:
+            raise AnalysisError("Document must have an ID for analysis")
 
         return DocumentAnalysis(
             document_id=document.id,

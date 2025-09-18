@@ -3,7 +3,7 @@ from typing import List
 from core.domain.entities.company import Company
 from core.domain.entities.document import Document
 from core.repositories.company_repository_protocol import CompanyRepositoryProtocol
-from core.repositories.document_repo import DjangoDocumentRepository
+from core.repositories.document_repository_protocol import DocumentRepositoryProtocol
 from .exceptions import CompanyNotFoundError
 
 
@@ -39,7 +39,7 @@ class CompanyWithDocuments:
 class GetCompanyWithDocuments:
     """Use case for getting a company by ID along with its documents."""
 
-    def __init__(self, company_repository: CompanyRepositoryProtocol, document_repository: DjangoDocumentRepository):
+    def __init__(self, company_repository: CompanyRepositoryProtocol, document_repository: DocumentRepositoryProtocol):
         self._company_repository = company_repository
         self._document_repository = document_repository
 

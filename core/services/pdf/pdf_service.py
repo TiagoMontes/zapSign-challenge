@@ -2,7 +2,7 @@ import hashlib
 import io
 from typing import Optional
 import requests
-from pypdf import PdfReader
+from pypdf import PdfReader  # type: ignore[import-untyped]
 
 from .interfaces import PDFExtractionService, PDFProcessingError
 

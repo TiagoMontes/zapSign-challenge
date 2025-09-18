@@ -9,6 +9,7 @@ class SignerSerializer(serializers.Serializer):
     status = serializers.CharField(max_length=50, required=False, allow_blank=True)
     external_id = serializers.CharField(max_length=255, required=False, allow_blank=True)
     sign_url = serializers.URLField(read_only=True, allow_blank=True)
+    company_id = serializers.IntegerField(read_only=True, allow_null=True)
     document_ids = serializers.ListField(
         child=serializers.IntegerField(),
         read_only=True,
@@ -16,4 +17,8 @@ class SignerSerializer(serializers.Serializer):
     )
     created_at = serializers.DateTimeField(read_only=True)
     last_updated_at = serializers.DateTimeField(read_only=True)
+    # ZapSign sync fields
+    times_viewed = serializers.IntegerField(read_only=True, allow_null=True)
+    last_view_at = serializers.DateTimeField(read_only=True, allow_null=True)
+    signed_at = serializers.DateTimeField(read_only=True, allow_null=True)
 

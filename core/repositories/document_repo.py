@@ -34,6 +34,14 @@ class DjangoDocumentRepository:
         except ObjectDoesNotExist:
             return None
 
+    def find_by_token(self, token: str) -> Optional[Document]:
+        """Find a document by its token."""
+        try:
+            model = DocumentModel.objects.prefetch_related('signers').get(token=token)
+            return DocumentMapper.to_entity(model)
+        except ObjectDoesNotExist:
+            return None
+
     def find_by_id_including_deleted(self, document_id: int) -> Optional[Document]:
         """Find a document by ID, including soft deleted ones."""
         try:
