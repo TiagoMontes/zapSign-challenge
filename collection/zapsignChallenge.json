@@ -1,0 +1,529 @@
+{
+  "info": {
+    "name": "Zapsign",
+    "description": "",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "create company",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/companies",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "companies"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"company_test\",\n  \"api_token\": \"179780ba-9822-4c74-b866-f88de0f29cc045fd2d53-5917-4f26-8a99-958648fea9bb\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "delete company by id",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/companies/3",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "companies",
+                "3"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "get All Companies",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/companies",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "companies"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "get company by id",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/companies/10",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "companies",
+                "10"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "update company by id",
+          "event": [],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/companies/4",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "companies",
+                "4"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"edewmkmde\",\n  \"api_token\": \"teste\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Document",
+      "item": [
+        {
+          "name": "Create Document",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_id\": 10,\n  \"name\": \"documento teste 2\",\n  \"url_pdf\": \"https://testbuckettiagor.s3.us-east-2.amazonaws.com/Tiago+Montes+Curri%CC%81culo.pdf\",\n  \"signers\": [\n    {\n      \"name\": \"tiago M\",\n      \"email\": \"tiagosantos6303@gmail.com\"\n    },\n    {\n      \"name\": \"Sarah M\",\n      \"email\": \"sarahsartorelli71@gmail.com\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete document by id",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents/5",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents",
+                "5"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Get all Documents",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Get document by id",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents/38",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents",
+                "38"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IA analysis",
+      "item": [
+        {
+          "name": "Analysis Doc",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents/35/analyze/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents",
+                "35",
+                "analyze",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"force_reanalysis\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Signers",
+      "item": [
+        {
+          "name": "Delete signer by id",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers/69/remove-external/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers",
+                "69",
+                "remove-external",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Create Signers",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_id\": 11,\n  \"name\": \"document_test_django\",\n  \"url_pdf\": \"https://zapsign.s3.amazonaws.com/2022/1/pdf/63d19807-cbfa-4b51-8571-215ad0f4eb98/ca42e7be-c932-482c-b70b-92ad7aea04be.pdf\",\n  \"signers\": [\n    {\n      \"name\": \"tiago M\",\n      \"email\": \"tiagosantos6303@gmail.com\"\n    },\n    {\n      \"name\": \"Sarah M\",\n      \"email\": \"sarahsartorelli71@gmail.com\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "New Signer to existing document",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/documents/38/add-signer/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "documents",
+                "38",
+                "add-signer",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "  {\n    \"name\": \"Novo bubu\",\n    \"email\": \"bubu@email.com\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Update Signer",
+          "event": [],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers/69/update-external/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers",
+                "69",
+                "update-external",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Noddme Atualizado\",\n  \"email\": \"novo@email.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "sync signers",
+          "event": [],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers/59/sync/",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers",
+                "59",
+                "sync",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Get all signers",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Get signer by id",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{localhost}}/signers/5",
+              "protocol": "",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "signers",
+                "5"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "localhost",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

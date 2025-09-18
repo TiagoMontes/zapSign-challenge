@@ -63,6 +63,7 @@ Este projeto implementa um sistema completo de gerenciamento de documentos com:
 
 ### 📝 Recursos de Teste
 - **PDFs de Teste**: Documentos de exemplo disponíveis em `pdfTest.md` para testes e desenvolvimento
+- **Coleção Postman**: Arquivo de coleção `collection/zapsignChallenge.json` com requisições prontas para testar todos os endpoints da API
 
 ## 📊 Documentação da API
 
@@ -70,6 +71,19 @@ Este projeto implementa um sistema completo de gerenciamento de documentos com:
 ```
 http://localhost:8000/api/
 ```
+
+### Coleção Postman
+Para facilitar os testes da API, está disponível uma coleção completa do Postman em `collection/zapsignChallenge.json`.
+
+**Como usar:**
+1. Importe o arquivo `collection/zapsignChallenge.json` no Postman
+2. Configure a variável de ambiente `localhost` para `http://localhost:8000`
+3. Execute as requisições diretamente com exemplos pré-configurados
+
+A coleção inclui todos os endpoints com exemplos de dados para:
+- Empresas (CRUD completo)
+- Documentos (criação, análise, adição de signatários)
+- Signatários (CRUD, sincronização ZapSign, operações externas)
 
 ### Autenticação
 Atualmente configurado com permissões `AllowAny` para desenvolvimento. Em produção, implemente autenticação adequada.
